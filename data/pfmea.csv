@@ -1,0 +1,10 @@
+risk_id,action_id,process_change,failure_path,control_action,evidence_id,applicability_note,quality_status,impact_parameter,impact_value,impact_unit,accounting_location,calc_target,missing_evidence,next_check
+F01,F01-A1,화성 단축,계면·가스·수명 변화,전류·전압창·온도 조합 검토; 초기효율·용량·가스·저항 및 장기 수명 비교,R3;R5;R9,16h 화성은 목표 사양이며 대상 공장 셀에서 검증된 값이 아님,미확인,allowed_protocol_formation_h,,h,additional,formation_h,허용 프로토콜 범위 및 장기 수명 비교 데이터,전류·전압창·온도 조합별 초기효율·용량·가스·저항·장기 수명 비교
+F01,F01-A2,화성 단축,계면·가스·수명 변화,품질 확보에 필요한 채널 보강 여부 판단,R9,채널 보강량은 품질 검증 결과 확인 후 결정,미확인,channel_ratio_supplement,,ratio,additional,channel_ratio,전체 점유시간 및 채널 보강량,허용 프로토콜 확정 후 채널비 재산정
+F02,F02-A1,데이터 재사용,진단 구간 변화·오판,측정 구간 유지; 새 프로토콜에서 독립 검증,R5;R3,0.25h는 목표 사양이며 16h+2h는 검증된 현장 측정값이 아닌 비교 가정,미확인,added_occupancy_h,0.25,h,additional,added_occupancy_h,새 프로토콜 구간에서의 진단 적합성 검증 결과,새 프로토콜에서 독립 검증 후 추가 점유시간 실측
+F02,F02-A2,데이터 재사용,진단 구간 변화·오판,진단 대체 가능 범위 확인(평가 목적·데이터 구간 적합성 확인 시에만 대체 후보),R5,적합성 미확인 상태에서는 대체 후보로만 표시,미확인,replaceable_diagnostic_scope,,ratio,additional,none,평가 목적과 데이터 구간의 적합성,대체 범위의 예측오차·적용 범위 및 불합격 셀 미검출/정상 셀 과잉 배제 평가
+D01,D01-A1,구간 건조 변경,잔류 NMP·접착·크랙,구간별 조건·코팅량 관리; 용매·접착·크랙 검사,R4;R6;R7,변경 열부하는 사용자가 입력하는 시나리오 조건으로만 취급,미확인,auxiliary_heat,,kWth,additional,drying_b_heating_demand,품질 확보용 보조열 정량값,허용 속도·풍량·보조열 조건에서 잔류 NMP·접착·크랙 검사
+D01,D01-A2,구간 건조 변경,잔류 NMP·접착·크랙,검사·보조 설비의 추가 전기 소모 집계,R4;R7,추가 전력은 aggregate 또는 itemized 중 한 방식으로만 집계,미확인,auxiliary_power,,pt,additional,p_add,추가 전기 소모 정량값,보조 전기부하 실측 후 P_add 항목 입력
+D02,D02-A1,풍량·열회수 변경,농도·응축 부족,배기 농도·응축 온도·회수율 관리; 우회 운전 기준,R7;R10;R4;R6,열원 가용량·공급 온도 적합성이 확인되지 않으면 열회수 공급 불허,미확인,heat_source_capacity,,kWth,additional,drying_b_qsource,배기 하한·열원·냉각 한계 데이터,입구·배기구 온도·배기량·열회수 가능 범위 확인
+R01,R01-A1,드라이룸 국소화,수분 유입,에어록·차압·이슬점 지도·최악 출입 복구 점검,R1;R8,국소화 효과는 문헌 시나리오이며 대상 공장 효과로 확정하지 않음,미확인,dryroom_environment_load,,pt,additional,p_add,환경부하·처리능력 제약 데이터,이슬점 -40°C 이하 유지 및 최악 출입 복구 시간 확인
+A01,A01-A1,랙·버퍼 전환,온도·추적·방재 문제,구역별 온도·추적·방재 검토,R8,승인되지 않은 공간은 전환 가능 슬롯으로 계산하지 않음,미확인,conversion_fraction,,ratio,additional,conversion_fraction,승인된 유효 슬롯 및 최소 버퍼 시간,온도 균일성·동선·방재·추적성·설비 접근성 검토 후 승인 슬롯 확정

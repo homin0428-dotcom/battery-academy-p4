@@ -1,0 +1,384 @@
+{
+  "scenario": "representative",
+  "execution_mode": "cli",
+  "timestamp": "2026-10-28T01:18:14",
+  "configuration_hash": "55a5ec08ede42e79febe4be4b7b340965078bc6fda3fcbd5fd7f8d8a79808b95",
+  "python_version": "3.13.16",
+  "package_versions": {
+    "numpy": "2.5.3",
+    "pandas": "3.0.5",
+    "matplotlib": "3.11.2",
+    "streamlit": "1.66.0",
+    "reportlab": "5.0.1",
+    "pytest": "9.1.1",
+    "pypdf": "5.9.0"
+  },
+  "calculation_mode": "건조 절감률 출처=수동 입력 (모드 A 참고값 42.20% [풍량 -20%, s=0.7, COP_h=3.85, COP_c=3, b=0.52; 건조 40% 수동 입력과 다른 값], 모드 B 계산 보류); P_add 집계=합산 방식; 추가 점유 출처=PFMEA 효과 합계",
+  "warnings": [],
+  "test_status": {
+    "status": "passed",
+    "passed": 224,
+    "failed": 0,
+    "errors": 0,
+    "exit_code": 0,
+    "summary": "224 passed in 181.71s (0:03:01)",
+    "command": "python -m pytest -q -p no:cacheprovider tests",
+    "started": "2026-10-28T01:15:12",
+    "log_file": "test_log.txt",
+    "log_sha256": "1e60f08d039c0420607bef71d8d2b55f491154f2a7fe7327b65c3258a86e0a04"
+  },
+  "input_sources": [
+    {
+      "path": "configs/scenarios.json",
+      "sha256": "4bacd0eb1a2c539e9ec9b511f5b9b865320906d26a90440d4ee4e44f9bae3d8a"
+    },
+    {
+      "path": "data/pfmea.csv",
+      "sha256": "76c91109af04d085c46513d664b23e07c7e357693b30d75b7e4539e5f1de2370"
+    },
+    {
+      "path": "data/evidence.csv",
+      "sha256": "53dc92e1b4a55ec396e0c268687bdcc210bd6361b23c8876dc45ace0c8fad03e"
+    },
+    {
+      "path": "assets/fonts/NanumGothic.ttf",
+      "sha256": "31cf6994c8c022a086d8ac6f5662b5729d1cdbe26e6886eeeb43e59e89de05dd"
+    },
+    {
+      "path": "assets/fonts/NanumGothicBold.ttf",
+      "sha256": "454eb3f503f377782a99eb84fc4bb7dde22a0f075d41b47427737f2985053bc9"
+    },
+    {
+      "path": "assets/fonts/OFL.txt",
+      "sha256": "98319c6b2d3fde3cb2e3fc19c063413e916b015795b10e766d534886b7ffdc9d"
+    }
+  ],
+  "derived": {
+    "formation_capacity_ratio": 1.2307692307692308,
+    "E_total": 85.62,
+    "saving_ratio": 0.2865,
+    "gap": 1.6200000000000045,
+    "quality_status": "미확인",
+    "formation_status": "충족",
+    "occupancy_lower_bound": false,
+    "capacity_is_upper_bound": false,
+    "increase_systems": [],
+    "unmet_risks": [],
+    "manual_pending": [
+      "F01-A1",
+      "F01-A2",
+      "D01-A1",
+      "D01-A2",
+      "D02-A1",
+      "R01-A1",
+      "A01-A1"
+    ]
+  },
+  "font_note": "NanumGothic(NHN Corporation, 2011) 임베딩, fsType=8. 라이선스: SIL OFL 1.1 (assets/fonts/OFL.txt). 폰트 파일 메타데이터 자체에는 라이선스 문구가 없다 - README 참조",
+  "evidence_dataset": {
+    "files": [
+      {
+        "path": "data/kb/effects.csv",
+        "sha256": "5c7032be5171de6baf85476986285f21525a518c3ce719da812406f3b3c70a5b"
+      },
+      {
+        "path": "data/kb/fmea.csv",
+        "sha256": "3ba62bb45d057a91608b6d997135c4ef2bf2b9a37b90374eae246b1344a9100e"
+      },
+      {
+        "path": "data/kb/heat_nodes.csv",
+        "sha256": "d861388c6bb1534a2c9f026d2a2a2a18c2d0eae99b672bd3f9aeacd1d1bb1dfa"
+      },
+      {
+        "path": "data/kb/levers.csv",
+        "sha256": "65b05a7ca8bced4bb2e5c68cde594dae17d501718a09409e7a77aef331c98cf7"
+      },
+      {
+        "path": "data/kb/sources.csv",
+        "sha256": "d48c0c7f99969a897d0ce595e44d170038f90de189a0dea0f3274b25a86ccfda"
+      }
+    ],
+    "status": "충족",
+    "error": null,
+    "verdict": "근거상 미달",
+    "selected_levers": [
+      "FOR-FAST",
+      "FOR-REGEN",
+      "FOR-DATA",
+      "DRY-ZONE",
+      "DRY-AIR",
+      "DRY-HP",
+      "DRM-LOCAL",
+      "DRM-LEAK",
+      "AGE-RACK"
+    ],
+    "counts": {
+      "sources": 62,
+      "effects": 49,
+      "fmea": 62,
+      "calc": 8,
+      "ref": 35,
+      "excl": 6,
+      "calc_sources": 4
+    },
+    "validation_errors": 0,
+    "holds": [
+      "관리 부담 미정량 11건(FM-005, FM-011, FM-013, BDH-FM-008, BDH-FM-009, BDH-FM-010, BDH-FM-011, BDH-FM-013, BDH-FM-016, BDH-FM-018, BDH-FM-019) - 결과는 부담 하한 기준",
+      "선택 레버 중 계산 가능한 근거 없음 7건(DRY-ZONE, DRY-AIR, DRY-HP, DRM-LEAK, FOR-REGEN, FOR-DATA, AGE-RACK) - 절감 0으로 계산"
+    ],
+    "saving_ratio": {
+      "conservative": 0.1840512664034153,
+      "typical": 0.1840512664034153,
+      "optimistic": 0.1840512664034153
+    },
+    "best_addition": [
+      "DRY-RAD"
+    ],
+    "v10_check": {
+      "건조": "근거 없음",
+      "드라이룸": "근거 상한 초과",
+      "화성": "근거 하한 미만(보수적)",
+      "에이징": "변경 없음(가정 0)",
+      "기타": "변경 없음(가정 0)"
+    },
+    "candidates": {
+      "selected": "B1",
+      "status": "조건부 추천 B1 - 전력 목표 계산상 충족 · 현장 확인 4개 조건(건조 처리능력, 화성 처리능력(1.2배), 에이징 보관능력, 품질·안전 관문)",
+      "rows": {
+        "A": {
+          "saving": [
+            0.1840512664034153,
+            0.1840512664034153,
+            0.1840512664034153
+          ],
+          "label": "미달 - 전력 원단위(-30%)",
+          "eligible": true,
+          "axes": {
+            "전력 원단위(-30%)": "미달",
+            "건조 처리능력": "미확인",
+            "화성 처리능력(1.2배)": "미확인",
+            "에이징 보관능력": "미확인",
+            "품질·안전 관문": "미확인"
+          }
+        },
+        "B0": {
+          "saving": [
+            0.3348302519106616,
+            0.3348302519106616,
+            0.3348302519106616
+          ],
+          "label": "전력 목표 계산상 충족 · 현장 확인 4개 조건(건조 처리능력, 화성 처리능력(1.2배), 에이징 보관능력, 품질·안전 관문)",
+          "eligible": true,
+          "axes": {
+            "전력 원단위(-30%)": "가정하 수치 충족",
+            "건조 처리능력": "미확인",
+            "화성 처리능력(1.2배)": "미확인",
+            "에이징 보관능력": "미확인",
+            "품질·안전 관문": "미확인"
+          }
+        },
+        "B1": {
+          "saving": [
+            0.34378510140898944,
+            0.34975500107454116,
+            0.355724900740093
+          ],
+          "label": "전력 목표 계산상 충족 · 현장 확인 4개 조건(건조 처리능력, 화성 처리능력(1.2배), 에이징 보관능력, 품질·안전 관문)",
+          "eligible": true,
+          "axes": {
+            "전력 원단위(-30%)": "가정하 수치 충족",
+            "건조 처리능력": "미확인",
+            "화성 처리능력(1.2배)": "미확인",
+            "에이징 보관능력": "미확인",
+            "품질·안전 관문": "미확인"
+          }
+        },
+        "B2": {
+          "saving": [
+            0.20020511255726148,
+            0.21097434332649223,
+            0.22174357409572287
+          ],
+          "label": "미달 - 전력 원단위(-30%)",
+          "eligible": true,
+          "axes": {
+            "전력 원단위(-30%)": "미달",
+            "건조 처리능력": "미확인",
+            "화성 처리능력(1.2배)": "미확인",
+            "에이징 보관능력": "미확인",
+            "품질·안전 관문": "미확인"
+          }
+        },
+        "C": {
+          "saving": [
+            0.34378510140898944,
+            0.34975500107454116,
+            0.355724900740093
+          ],
+          "label": "전력 목표 계산상 충족 · 현장 확인 4개 조건(건조 처리능력, 화성 처리능력(1.2배), 에이징 보관능력, 품질·안전 관문)",
+          "eligible": false,
+          "axes": {
+            "전력 원단위(-30%)": "가정하 수치 충족",
+            "건조 처리능력": "미확인",
+            "화성 처리능력(1.2배)": "미확인",
+            "에이징 보관능력": "미확인",
+            "품질·안전 관문": "미확인"
+          }
+        }
+      }
+    }
+  },
+  "version": "v12.2",
+  "consistency_check": {
+    "ok": true,
+    "checks": [
+      {
+        "item": "CSV 절감(typical)",
+        "ok": true
+      },
+      {
+        "item": "CSV 절감(conservative)",
+        "ok": true
+      },
+      {
+        "item": "CSV 절감(optimistic)",
+        "ok": true
+      },
+      {
+        "item": "CSV E_new",
+        "ok": true
+      },
+      {
+        "item": "CSV 여유",
+        "ok": true
+      },
+      {
+        "item": "PDF 1쪽 절감",
+        "ok": true,
+        "expect": "35.0%"
+      },
+      {
+        "item": "PDF 1쪽 E_new",
+        "ok": true,
+        "expect": "78.03 pt"
+      },
+      {
+        "item": "PDF 1쪽 여유",
+        "ok": true,
+        "expect": "+5.97 pt"
+      },
+      {
+        "item": "PDF 1쪽 개조 %p",
+        "ok": true,
+        "expect": "27.64%p"
+      },
+      {
+        "item": "PDF 1쪽 희석 %p",
+        "ok": true,
+        "expect": "7.33%p"
+      },
+      {
+        "item": "본문에 이전 모델 '추천 조합(+DRY-RAD + AGE-EARLY)' 표기 없음",
+        "ok": true
+      },
+      {
+        "item": "PDF 1쪽 처리능력 카드",
+        "ok": true,
+        "expect": "공장 처리능력 1.056배"
+      },
+      {
+        "item": "PDF 본문 에이징 슬롯",
+        "ok": true,
+        "expect": "+13.68%"
+      },
+      {
+        "item": "본문에 '5,000 ppm' 에이징 불량률 표기 없음",
+        "ok": true
+      },
+      {
+        "item": "부록 A가 본문 뒤에 있음",
+        "ok": true
+      }
+    ]
+  },
+  "code_files": [
+    {
+      "path": "app.py",
+      "sha256": "a32e64dad782e07643d198490461c6e9330e5b863160e82dc0eded4d6401294a"
+    },
+    {
+      "path": "baseline.py",
+      "sha256": "acc6b9fdacfb298c552dfebc48168534f0934ad10f4fafe7dbfb53b163c3e127"
+    },
+    {
+      "path": "candidates.py",
+      "sha256": "23dad07969b50dc07d1b9bf5afb48f995265ea71c9faa474628333ef58346095"
+    },
+    {
+      "path": "capacity.py",
+      "sha256": "b88d461361ce725c0321d04067207d8d17fc4df45d379f672b29b5f33c8f2a47"
+    },
+    {
+      "path": "core.py",
+      "sha256": "22100fb1fbbac90a299525109bb5b6fe1ee5760e2696f60e7b46df1a46743a9a"
+    },
+    {
+      "path": "design.py",
+      "sha256": "25ad74e693cc33fa450eead46e34cb5b8bf45dbc339797a26cef5a859e76f83d"
+    },
+    {
+      "path": "economics.py",
+      "sha256": "556028885a0cfa731c8e272f7482a023e66a6b1079274fa3715d8946b71b81e7"
+    },
+    {
+      "path": "evidence_engine.py",
+      "sha256": "421773892f7e673880d2648956ba6f58059ae1095957337850e49befc62a9a8c"
+    },
+    {
+      "path": "evidence_report.py",
+      "sha256": "6d720e9a7bc5ccc8f32fc48633166f729f6f8f38125277b024769290f7dc1c25"
+    },
+    {
+      "path": "heat_integration.py",
+      "sha256": "1464e95fd960501c9df2dad728d70cb666a78cb87b2d05065efae8a13c7f0236"
+    },
+    {
+      "path": "joint.py",
+      "sha256": "bad2a85ae072b6c63fdd60f6a60173c836af86329a09f219f2fe53b6989db55c"
+    },
+    {
+      "path": "kb_import.py",
+      "sha256": "9267c33f9e9f3eacd3b83d742b5ded9166826551d335906bcb2b1e40f7486350"
+    },
+    {
+      "path": "kb_schema.py",
+      "sha256": "69b49aee6fa37a134c7238f3490b8b9f7c6b9482819956a56a31c652ffbe3791"
+    },
+    {
+      "path": "necessity.py",
+      "sha256": "b51897585db30fdd1dec96159b1eb9e4cd0ac433f547b273984f747f411093e3"
+    },
+    {
+      "path": "reporting.py",
+      "sha256": "903fc01920d9a4e948e1718ae32a65b4814a96e837c31759c96c0335bb31708b"
+    },
+    {
+      "path": "results_export.py",
+      "sha256": "cf4c9182791d410b0149050da5a44b04432eff04db6cb8fae8e7012fb6573d54"
+    },
+    {
+      "path": "roadmap.py",
+      "sha256": "60fe8b03e8c1b3b384e3855d3225f567e24b86a9fdcea981b17cc4b44a238c22"
+    },
+    {
+      "path": "run.py",
+      "sha256": "d4f3c839a8e7b8df6cbadbd4ff0a38f6e01003b4dd4f28dc23f7b91917219e1b"
+    },
+    {
+      "path": "upside.py",
+      "sha256": "6c4f5b74b70ee665d7e8244bcfad2b3dece9d7d452d1d7e50dd309c73942465d"
+    }
+  ],
+  "results_json_sha256": "02aea941997b128aebe5470bc29ac92a24758befa6d1dba7cb5d771794304e3b",
+  "test_log_sha256": "1e60f08d039c0420607bef71d8d2b55f491154f2a7fe7327b65c3258a86e0a04"
+}

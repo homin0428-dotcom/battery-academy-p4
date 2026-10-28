@@ -1,0 +1,14 @@
+battery_v10 v12.2 실행 방법 (Windows PowerShell)
+
+1) 이 zip을 원하는 폴더에 풀기 (예: C:\cursor-work) -> battery_v10 폴더가 생김
+2) 처음 한 번만 (battery_v10 폴더에서):
+   python -m venv .venv
+   .venv\Scripts\pip install -r requirements.txt
+3) 실행 (battery_v10 폴더에서):
+   .venv\Scripts\python tools\verify_v11.py      -> 마지막 줄 "35/35 일치"
+   .venv\Scripts\python run.py --run-tests       -> "pytest: passed (통과 224 ...) + 숫자 일치 검사 통과", outputs\ 에 보고서 생성
+   .venv\Scripts\streamlit run app.py            -> 브라우저 화면 (localhost:8501)
+
+※ .venv를 상위 폴더(C:\cursor-work\.venv)에 만든 경우 위의 .venv\ 를 ..\.venv\ 로 바꿔서 실행.
+※ 결과 숫자는 outputs\evidence_report.pdf 1~17쪽(본문)을 기준으로 사용. 18쪽부터 부록 A(이전 모델)는 PPT에 쓰지 않음.
+※ 모든 숫자의 원본은 outputs\results.json (보고서·CSV와 자동 일치 검사).

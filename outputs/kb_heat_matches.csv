@@ -1,0 +1,13 @@
+﻿source,source_name,demand,demand_name,cross_process,how,lever,contaminant,calc_candidate,power_effect_pt
+S-DRM-REG,데시칸트 재생 배기,D-DRY-PRE,건조 공기 예열,True,"히트펌프 필요(승온 10°C 이상, COP 근거 필요)",-,수분,False,0.0
+S-DRM-REG,데시칸트 재생 배기,D-AGE-HOT,고온 에이징실 유지,True,직접 열교환 가능(열원 상단 온도 기준) - 열원 하단에서는 부족,-,수분,False,0.0
+S-DRY-EXH,건조로 배기(희석 공기·NMP 증기 포함),D-DRM-REG,데시칸트 재생 공기 가열,True,직접 열교환 가능(열원 상단 온도 기준) - 열원 하단에서는 부족,-,NMP,False,0.0
+S-DRY-EXH,건조로 배기(희석 공기·NMP 증기 포함),D-AGE-HOT,고온 에이징실 유지,True,직접 열교환 가능(열원 상단 온도 기준) - 전 범위 보장,-,NMP,False,0.0
+S-FOR-DIS,화성 방전 저항 발열·화성실 배기,D-DRY-PRE,건조 공기 예열,True,"히트펌프 필요(승온 50°C 이상, COP 근거 필요)",-,-,False,0.0
+S-FOR-DIS,화성 방전 저항 발열·화성실 배기,D-AGE-HOT,고온 에이징실 유지,True,"히트펌프 필요(승온 15°C 이상, COP 근거 필요)",-,-,False,0.0
+S-NMP-COND,NMP 응축 칠러 응축기 배열,D-AGE-HOT,고온 에이징실 유지,True,"히트펌프 필요(승온 10°C 이상, COP 근거 필요)",-,-,False,0.0
+S-DRM-REG,데시칸트 재생 배기,D-DRM-REG,데시칸트 재생 공기 가열,False,"히트펌프 필요(승온 60°C 이상, COP 근거 필요)",DRM-HR,수분,False,0.0
+S-DRY-EXH,건조로 배기(희석 공기·NMP 증기 포함),D-DRY-PRE,건조 공기 예열,False,직접 열교환 가능(열원 상단 온도 기준) - 열원 하단에서는 부족,DRY-HX,NMP,False,0.0
+S-NMP-COND,NMP 응축 칠러 응축기 배열,D-DRY-PRE,건조 공기 예열,False,"히트펌프 필요(승온 45°C 이상, COP 근거 필요)",DRY-HP,-,False,0.0
+S-FOR-DIS,화성 방전 저항 발열·화성실 배기,D-DRM-REG,데시칸트 재생 공기 가열,True,연결 불가(승온 폭 과대 - 현실적 히트펌프 범위 밖),-,-,False,0.0
+S-NMP-COND,NMP 응축 칠러 응축기 배열,D-DRM-REG,데시칸트 재생 공기 가열,True,연결 불가(승온 폭 과대 - 현실적 히트펌프 범위 밖),-,-,False,0.0
