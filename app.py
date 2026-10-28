@@ -14,6 +14,8 @@ import candidates as cand_mod
 import core
 import reporting
 import ui_v3
+import importlib
+importlib.reload(ui_v3)   # 배포 서버가 이전 버전 모듈을 메모리에 남겨 두는 경우 대비 (화면 모듈만, 계산 엔진 아님)
 
 def result_key(res, scenario, quality_overrides):
     """다운로드 파일이 현재 화면 결과와 같은 입력에서 만들어졌는지 확인하는 키."""
