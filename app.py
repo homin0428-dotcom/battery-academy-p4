@@ -89,13 +89,26 @@ html, body, [class*="css"], .stMarkdown, .stDataFrame, button, input { font-fami
 .stTabs [role="tab"]:hover { background: #E2EEEF; }
 .stTabs [role="tab"][data-selected="true"], .stTabs [role="tab"][aria-selected="true"] { background: #173B50 !important; color: #fff !important; }
 .stTabs [role="tab"][data-selected="true"] p { color: #fff !important; }
-div.stDownloadButton > button { width: 100%; min-height: 46px; border-radius: 10px; border: 1px solid #237B80; color: #173B50; font-weight: 700; }
+div.stButton > button { border-radius: 10px; border: 1px solid #237B80; color: #173B50; font-weight: 700; background: #fff; }
+div.stButton > button:hover { background: #237B80; color: #fff; }
+div.stDownloadButton > button { background: #fff; width: 100%; min-height: 46px; border-radius: 10px; border: 1px solid #237B80; color: #173B50; font-weight: 700; }
 div.stDownloadButton > button:hover { background: #237B80; color: #fff; }
 .topbar { font-size: 13px; color: #5F6F77; letter-spacing: .04em; font-weight: 500; }
 .topbar a { color: #237B80; text-decoration: none; }
 .st-key-dl_top_pdf button { background: #173B50 !important; color: #fff !important; border: none !important; border-radius: 10px !important;
     font-size: 16px !important; font-weight: 700 !important; padding: 12px 18px !important; box-shadow: 0 6px 16px rgba(23,59,80,.28); }
 .st-key-dl_top_pdf button:hover { background: #237B80 !important; }
+.wtbl-wrap { overflow: auto; border: 1px solid #E3ECEE; border-radius: 10px; margin: 4px 0 14px; -webkit-overflow-scrolling: touch; }
+.wtbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+.wtbl th { position: sticky; top: 0; z-index: 1; background: #F2F6F7; color: #4A5A63; font-weight: 600; text-align: left;
+           padding: 9px 12px; border-bottom: 1px solid #E3ECEE; white-space: nowrap; }
+.wtbl td { padding: 9px 12px; border-bottom: 1px solid #EEF3F4; vertical-align: top; line-height: 1.5; word-break: keep-all; overflow-wrap: anywhere; color: #1F2D35; }
+.wtbl td.nw { white-space: nowrap; }
+.wtbl td.mt { min-width: 150px; }
+.wtbl td.lt { min-width: 260px; }
+.wtbl tr:last-child td { border-bottom: none; }
+.wtbl tbody tr:hover td { background: #F7FAFA; }
+@media (max-width: 700px) { .wtbl { font-size: 12.5px; min-width: 620px; } .wtbl td, .wtbl th { padding: 7px 9px; } }
 @media (max-width: 900px) { .stTabs [data-baseweb="tab"], .stTabs [role="tab"] { flex: 0 0 auto; }  .kpis { grid-template-columns: repeat(2, 1fr); } .hero h1 { font-size: 26px; } }
 </style>""", unsafe_allow_html=True)
 
@@ -171,7 +184,7 @@ with tab3:
             ss["quality_overrides"] = {}
             st.rerun()
     table = core.pfmea_table(res)
-    st.dataframe(pd.DataFrame([{k: v for k, v in t.items() if k not in ("risk_id", "rows", "quality")} for t in table]),
+    ui_v3.table(pd.DataFrame([{k: v for k, v in t.items() if k not in ("risk_id", "rows", "quality")} for t in table]),
                  hide_index=True, width="stretch")
     c = pf.get("counts", {})
     st.caption(f"계산 반영 효과 {c.get('reflected', 0)}건 · 정량 부담 미확인 {c.get('burden_unknown', 0)}건 · "
@@ -185,7 +198,7 @@ with tab3:
                   "연결 방식": r.get("link_type", "-"), "반영 위치·방법": r.get("link_note", ""),
                   "계산 상태": r["calc_status"]} for r in pf.get("rows", [])]
     if link_rows:
-        st.dataframe(pd.DataFrame(link_rows), hide_index=True, width="stretch")
+        ui_v3.table(pd.DataFrame(link_rows), hide_index=True, width="stretch")
     if pf.get("manual_pending"):
         st.warning(f"자동 연결되지 않은 미반영 항목 {len(pf['manual_pending'])}건: {', '.join(pf['manual_pending'])} — "
                    "최종 결론에도 이 사실이 표시됩니다.")
@@ -229,9 +242,9 @@ with tab3:
                    "판정은 범주(근거 충분/약함/참고만/없음)로만 하며 점수를 만들지 않습니다.")
         if evd["n_errors"]:
             st.error("데이터셋 검증 오류 - 해당 행은 판정에서 제외됨")
-            st.dataframe(pd.DataFrame([i for i in evd["issues"] if i["level"] == "error"]), hide_index=True, width="stretch")
+            ui_v3.table(pd.DataFrame([i for i in evd["issues"] if i["level"] == "error"]), hide_index=True, width="stretch")
         st.markdown("##### 레버별 근거 판정표")
-        st.dataframe(pd.DataFrame([{
+        ui_v3.table(pd.DataFrame([{
             "레버": l["lever_id"], "이름": l["name"], "계통": l["system"], "선택": "선택" if l["selected"] else "",
             "판정": l["judge"],
             "계통 기준 절감(%)": "-" if not l["range"] else f"{l['range'][0] * 100:.1f}~{l['range'][2] * 100:.1f} (대표 {l['range'][1] * 100:.1f})",
@@ -239,7 +252,7 @@ with tab3:
             "주요 고장모드": "; ".join(l["failure_modes"]), "다음 조치": "; ".join(l["todo"])} for l in evd["levers"]]),
             hide_index=True, width="stretch")
         st.markdown("##### 근거 추적표 (수치 → 근거)")
-        st.dataframe(pd.DataFrame([{
+        ui_v3.table(pd.DataFrame([{
             "ID": e["effect_id"], "레버": e["lever_id"], "지표": e["metric"], "측정범위": e["boundary"], "환산": e["how"],
             "계통 기준(%)": None if e["typ"] is None or e["role"] != "saving" else round(e["typ"] * 100, 1),
             "사용": e["use"], "적용": e["transfer"], "근거": e["source_id"], "위치": e["locator"],
@@ -261,8 +274,11 @@ with tab3:
                                   "근거 메모": ss["kb_confirm"].get(r["fmea_id"], {}).get("memo", "")} for r in shown])
             ed = st.data_editor(df_q, hide_index=True, width="stretch", key="qgate_editor",
                                 disabled=["FMEA", "레버", "고장모드", "품질 관문", "판정 상태", "바뀐 조건"],
-                                column_config={"기록": st.column_config.SelectboxColumn(options=["미기록", "확인", "불합격"])})
-            b1, b2, b3 = st.columns([1, 1, 2])
+                                column_config={"기록": st.column_config.SelectboxColumn(options=["미기록", "확인", "불합격"]),
+                                               "고장모드": st.column_config.TextColumn(width="medium"),
+                                               "품질 관문": st.column_config.TextColumn(width="large")})
+            st.caption("표의 '기록' 칸에서 확인/불합격을 고르고 근거 메모를 적은 뒤 저장하면 판정이 다시 계산된다. 칸을 누르면 전체 글이 보인다.")
+            b1, b3, b2, _bsp = st.columns([1, 1.15, 1, 2.2], vertical_alignment="center")
             if b1.button("품질 관문 기록 저장"):
                 new, errs = dict(ss["kb_confirm"]), []
                 for _, row in ed.iterrows():
@@ -287,7 +303,8 @@ with tab3:
                 st.rerun()
             b3.download_button("확인 기록 내보내기(.json)", json.dumps(ss["kb_confirm"], ensure_ascii=False, indent=2),
                                file_name="품질관문_확인기록.json", mime="application/json")
-            up = st.file_uploader("확인 기록 불러오기(.json)", type=["json"], key="qgate_upload")
+            with st.expander("저장해 둔 확인 기록 불러오기(.json)"):
+                up = st.file_uploader("확인 기록 파일", type=["json"], key="qgate_upload")
             if up is not None and st.button("불러온 기록 적용"):
                 try:
                     data = json.loads(up.getvalue().decode("utf-8"))
@@ -302,11 +319,6 @@ with tab3:
             st.caption(f"화성시간 점검: 목표/기준 = {tm['target_ratio']:.2f}, 문헌 시간비 {tm['evidence_lo']:.2f}~{tm['evidence_hi']:.2f} → {tm['status']}")
         for p in evd["params"]:
             st.caption(f"파라미터 점검: {p['param']} 가정 {p['assumed']:g} vs 근거 {p['lo']:g}~{p['hi']:g} → {p['status']}")
-        tpl = Path(__file__).resolve().parent / "근거FMEA_입력템플릿.xlsx"
-        if tpl.exists():
-            st.download_button("팀원용 근거 입력 템플릿(.xlsx)", tpl.read_bytes(), file_name=tpl.name,
-                               mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        st.caption("새 자료는 템플릿에 채운 뒤 `python kb_import.py 파일.xlsx --merge`로 데이터셋(data/kb)에 병합합니다.")
 
 # ---------------------------------------------------------------- 입력
 with tab4:
@@ -448,7 +460,7 @@ with tab4:
         st.caption(reporting.energy_caption(res))
         st.markdown("##### 비교 조건 (과제 표)")
         cmp_df = pd.DataFrame(res["comparison"]).drop(columns=["group"], errors="ignore")
-        st.dataframe(cmp_df, hide_index=True, width="stretch")
+        ui_v3.table(cmp_df, hide_index=True, width="stretch")
         st.markdown("##### 건조 모드 A / B 결과 (서로 중복 반영하지 않음)")
         a, b = res["drying_a"], res["drying_b"]
         c = st.columns(2)
@@ -468,7 +480,7 @@ with tab4:
         ag = res["aging"]
         if ag.get("zone_mode") and ag["status"] == core.NUM_OK:
             st.markdown("##### 에이징 구역별 슬롯·공간 (구역 간 상쇄 없음, 총 14일 유지)")
-            st.dataframe(pd.DataFrame([{"구역": z["name"], "추가 슬롯비": z["additional_slot_ratio"],
+            ui_v3.table(pd.DataFrame([{"구역": z["name"], "추가 슬롯비": z["additional_slot_ratio"],
                                        "freed_area [m²]": z["freed_area_m2"], "전환 가능 슬롯(조건부)": z["convertible_slots"],
                                        "상태": z["space_status"]} for z in ag["zones"]]), hide_index=True, width="stretch")
             st.caption(f"합계 상태: {ag['space_status']} — {ag['space_note']}")
@@ -518,12 +530,12 @@ with tab5:
                      f"{pct_(c['saving'][0])}~{pct_(c['saving'][2])}", f"{c['margin_pt']:+.2f}",
                      f"{mny['krw_eok'][0]:.0f}~{mny['krw_eok'][1]:.0f}" if mny else "-"]
                     + [a["state"] for a in c["axes"]] + [f"{c['n_gates']}건 (안전 {c['n_safety_gates']})", c["label"]])
-            st.dataframe(pd.DataFrame(tbl), hide_index=True, width="stretch")
+            ui_v3.table(pd.DataFrame(tbl), hide_index=True, width="stretch")
             if sel_c:
                 with st.expander(f"{sel_c['id']} 축별 근거 · 실패 경계 · 전환 조건", expanded=False):
-                    st.dataframe(pd.DataFrame([{"축": a["axis"], "상태": a["state"], "내용": a["status"]} for a in sel_c["axes"]]),
+                    ui_v3.table(pd.DataFrame([{"축": a["axis"], "상태": a["state"], "내용": a["status"]} for a in sel_c["axes"]]),
                                  hide_index=True, width="stretch")
-                    st.dataframe(pd.DataFrame([{"경계": b["kind"], "의미": b["text"]} for b in cd["boundaries"]]),
+                    ui_v3.table(pd.DataFrame([{"경계": b["kind"], "의미": b["text"]} for b in cd["boundaries"]]),
                                  hide_index=True, width="stretch")
                     for t_ in cd["switch"]:
                         st.write("· " + t_)
@@ -538,25 +550,27 @@ with tab5:
                 with st.expander("동시 불확실성·스트레스 시나리오", expanded=False):
                     st.caption(jt_["region"]["formula"] + " — P 허용치: " + " · ".join(
                         f"α {a:g} → {p:.2f} pt" for a, p in jt_["region"]["p_max"].items()))
-                    st.dataframe(pd.DataFrame([{"ID": r_["id"], "시나리오": r_["scenario"], "원단위 절감": pct_(r_["saving"]),
+                    ui_v3.table(pd.DataFrame([{"ID": r_["id"], "시나리오": r_["scenario"], "원단위 절감": pct_(r_["saving"]),
                                                 "여유(pt)": f"{r_['margin_pt']:+.2f}", "판정": r_["verdict"]} for r_ in jt_["stress"]["rows"]]),
                                  hide_index=True, width="stretch")
             nc_ = (cd.get("necessity") or {}).get("necessity")
             if nc_:
                 with st.expander(f"레버 필요성 ({nc_['candidate']}에서 하나씩 뺄 때)", expanded=False):
-                    st.dataframe(pd.DataFrame([{"레버": f"{r_['name']}({r_['lever_id']})", "빼면 감소(%p)": round(r_["delta_pp"], 2),
+                    ui_v3.table(pd.DataFrame([{"레버": f"{r_['name']}({r_['lever_id']})", "빼면 감소(%p)": round(r_["delta_pp"], 2),
                                                 "관문 수 감소": r_["gates_delta"], "분류": r_["class"]} for r_ in nc_["rows"]]),
                                  hide_index=True, width="stretch")
             if cd.get("heat"):
                 with st.expander("열원 민감도 (후보별 재계산)", expanded=False):
-                    st.dataframe(pd.DataFrame([{"열원 조건": r_["case"], "후보": r_["candidate"] + (" ★" if r_["selected"] else ""),
+                    st.caption("후보: " + " · ".join(f"**{c_['id']}** {c_['name']}" for c_ in cd["candidates"])
+                               + " ｜ ★ = 그 열원 조건에서 추천되는 후보(모두 미달이면 그중 가장 나은 후보)")
+                    ui_v3.table(pd.DataFrame([{"열원 조건": r_["case"], "후보": r_["candidate"] + (" ★" if r_["selected"] else ""),
                                                 "원단위 절감 대표": pct_(r_["saving"][1]), "건조 계통": cand_mod.sys_change(r_["r_drying"]),
                                                 "드라이룸 계통": cand_mod.sys_change(r_["r_dryroom"]), "전력 축": r_["energy_state"]}
                                                for r_ in cd["heat"]["rows"]]), hide_index=True, width="stretch")
                     st.caption(cd["heat"]["note"])
             if cd.get("stages"):
                 with st.expander(f"단계별 누적 효과 ({cd['stages']['candidate']})", expanded=False):
-                    st.dataframe(pd.DataFrame([{"단계": x["stage"], "추가 레버": ", ".join(x["added"]) or "-",
+                    ui_v3.table(pd.DataFrame([{"단계": x["stage"], "추가 레버": ", ".join(x["added"]) or "-",
                                                 "원단위 절감 대표": pct_(x["saving"][1]),
                                                 "보수~낙관": f"{pct_(x['saving'][0])}~{pct_(x['saving'][2])}",
                                                 "여유(pt)": f"{x['margin_pt']:+.2f}", "종합": x["label"]} for x in cd["stages"]["stages"]]),
@@ -565,11 +579,11 @@ with tab5:
             dz_ = cd.get("design") if isinstance(cd.get("design"), dict) and "error" not in cd.get("design") else None
             if dz_:
                 with st.expander("두 목표 신호등 · 금액 카드 · 설계 고정 비교 (v12.2)", expanded=True):
-                    st.dataframe(pd.DataFrame([{"조건": r_["cond"], "전력 -30%": r_["power"], "생산능력 +20%": r_["capacity"], "종합": r_["overall"]}
+                    ui_v3.table(pd.DataFrame([{"조건": r_["cond"], "전력 -30%": r_["power"], "생산능력 +20%": r_["capacity"], "종합": r_["overall"]}
                                                for r_ in dz_["signal"]["rows"]]), hide_index=True, width="stretch")
                     for c_ in dz_["money"]["cards"]:
                         st.write(f"**{c_['title']}**: 연 {c_['krw_eok'][0]:.0f}~{c_['krw_eok'][1]:.0f}억 원 - {c_['line']}")
-                    st.dataframe(pd.DataFrame([{"설계": r_["label"] + (" ★공식" if r_["official"] else ""), "절감": pct_(r_["saving"][1]),
+                    ui_v3.table(pd.DataFrame([{"설계": r_["label"] + (" ★공식" if r_["official"] else ""), "절감": pct_(r_["saving"][1]),
                                                 "여유(pt)": f"{r_['margin_pt']:+.2f}", "α*": f"{r_['alpha_star']:.3f}", "f 전부 0": pct_(r_["f0"]),
                                                 "2년차 공간 미확보": pct_(r_["y2_no_slot"])} for r_ in dz_["compare"]["rows"]]),
                                  hide_index=True, width="stretch")
@@ -578,18 +592,18 @@ with tab5:
             if rm_:
                 with st.expander("생산능력 +20% 공간 수지 · 연차별 도달도 · 영향평가 (PPT용)", expanded=False):
                     st.write(rm_["space"]["sentence"])
-                    st.dataframe(pd.DataFrame([{"": o["no"], "확보 후보": o["name"], "원리": o["how"], "기대는 조건": o["depends"],
+                    ui_v3.table(pd.DataFrame([{"": o["no"], "확보 후보": o["name"], "원리": o["how"], "기대는 조건": o["depends"],
                                                 "시기": o["when"]} for o in rm_["space"]["options"]]), hide_index=True, width="stretch")
-                    st.dataframe(pd.DataFrame([{"단계": r_["stage"], "전력 절감(공간 미확보)": pct_(r_["power_no_slot"]),
+                    ui_v3.table(pd.DataFrame([{"단계": r_["stage"], "전력 절감(공간 미확보)": pct_(r_["power_no_slot"]),
                                                 "전력 절감(슬롯 확보 시)": pct_(r_["power_if_slot"]), "생산비 q_t": f"{r_['q_no_slot']:.3f}",
                                                 "q_t(슬롯 확보 시)": f"{r_['q_if_slot']:.3f}"} for r_ in rm_["reach"]["rows"]]),
                                  hide_index=True, width="stretch")
-                    st.dataframe(pd.DataFrame([{"개선안": r_["name"], "생산능력": r_["capacity"], "전력": r_["power"], "투자": r_["capex"],
+                    ui_v3.table(pd.DataFrame([{"개선안": r_["name"], "생산능력": r_["capacity"], "전력": r_["power"], "투자": r_["capex"],
                                                 "난이도": r_["difficulty"], "수명·검출력": r_["quality"], "안전": r_["safety"], "시기": r_["horizon"]}
                                                for r_ in rm_["impact"]["rows"]]), hide_index=True, width="stretch")
                     st.caption(rm_["impact"]["rule"])
             with st.expander("무엇을 먼저 확인하는가 (검증 우선순위)", expanded=False):
-                st.dataframe(pd.DataFrame([{"순위": t_["priority"], "질문": t_["question"], "판정 영향": t_["impact"],
+                ui_v3.table(pd.DataFrame([{"순위": t_["priority"], "질문": t_["question"], "판정 영향": t_["impact"],
                                             "시험": t_["how"], "기간·비용(가정)": f"{t_['period']} · {t_['cost']}",
                                             "양끝 재계산": t_["text"]} for t_ in cd["priority"]["tests"]]),
                              hide_index=True, width="stretch")
@@ -602,7 +616,7 @@ with tab5:
             st.caption(CFG["scenarios"][scenario]["description"] + (" — 탭 2에서 입력한 값이 적용됩니다." if scenario == "custom" else ""))
             cols = st.columns(4)
             for c, k in zip(cols, res["kpi"]):
-                with c.container(border=True):
+                with c.container(border=True, height=250):
                     st.caption(k["title"])
                     st.subheader(k["value"])
                     st.write(k["sub"])
@@ -612,14 +626,14 @@ with tab5:
                 df = pd.DataFrame([{"단계": b["stage"], "화성 처리능력(배)": b["capacity_ratio"], "총전력(pt)": b["E_total"],
                                     "원단위 절감(%)": None if b["saving_ratio"] is None else b["saving_ratio"] * 100,
                                     "격차(pt)": b["gap"], "조건": b["note"]} for b in res["before_after"]])
-                st.dataframe(df, hide_index=True, width="stretch",
+                ui_v3.table(df, hide_index=True, width="stretch",
                              column_config={"화성 처리능력(배)": st.column_config.NumberColumn(format="%.3f"),
                                             "총전력(pt)": st.column_config.NumberColumn(format="%.2f"),
                                             "원단위 절감(%)": st.column_config.NumberColumn(format="%.2f"),
                                             "격차(pt)": st.column_config.NumberColumn(format="%+.2f")})
             rq = pd.DataFrame([{"항목": x["item"], "현재 입력": x["current"], "요구·허용": x["required"],
                                 "단위": x["unit"], "해석": x["note"]} for x in res["requirements"]])
-            st.dataframe(rq, hide_index=True, width="stretch")
+            ui_v3.table(rq, hide_index=True, width="stretch")
             st.info(res["conclusion"])
             st.caption("요구값은 확보된 성능이 아니며, 수치 충족과 품질 상태는 별개로 판정합니다.")
 
@@ -637,7 +651,7 @@ with tab5:
                 ov = evd.get("overall")
                 if ov:
                     (st.success if ov["all_ok"] else st.error)(f"종합 판정(추천 조합): {ov['label']}")
-                    st.dataframe(pd.DataFrame([{"축": a_["axis"], "현재 선택": f"[{b_['state']}] {b_['status']}",
+                    ui_v3.table(pd.DataFrame([{"축": a_["axis"], "현재 선택": f"[{b_['state']}] {b_['status']}",
                                                 "추천 조합": f"[{a_['state']}] {a_['status']}"}
                                                for a_, b_ in zip(ov["axes"], evd["overall_selected"]["axes"])]),
                                  hide_index=True, width="stretch")
@@ -648,7 +662,7 @@ with tab5:
                          f"보수 {pct(cs['conservative']['saving'])} ~ 낙관 {pct(cs['optimistic']['saving'])}"),
                         ("위 v10 가정 결과", core.fmt_pct(res["plant"].get("saving_ratio"), 2), "사람이 정한 r로 계산 (비교용)"),
                         ("근거 있는 선택 레버", f"{n_cov} / {n_sel}", "계산 가능한 근거가 있는 레버")]):
-                    with col.container(border=True):
+                    with col.container(border=True, height=190):
                         st.caption(t)
                         st.subheader(v)
                         st.write(s)
@@ -663,7 +677,7 @@ with tab5:
                 st.markdown("##### 개선안 비교표")
                 yrs = op["payback_years"]
                 fmt_rng = lambda m, k: "-" if not m else f"{m[k][0]:.0f}~{m[k][1]:.0f}"
-                st.dataframe(pd.DataFrame([{
+                ui_v3.table(pd.DataFrame([{
                     "개선안": r["option"], "전력 판정": r["verdict"],
                     "대표 절감(%)": None if r["saving"][1] is None else round(r["saving"][1] * 100, 1),
                     "보수~낙관(%)": "-" if r["saving"][0] is None else f"{r['saving'][0] * 100:.1f}~{r['saving'][2] * 100:.1f}",
@@ -674,7 +688,7 @@ with tab5:
                     for r in op["rows"]]), hide_index=True, width="stretch")
                 st.caption(op["note"])
                 st.markdown("##### 추천이 바뀌는 조건")
-                st.dataframe(pd.DataFrame([{"구분": t["kind"], "계통": t["system"], "조건": t["text"]} for t in evd["thresholds"]]),
+                ui_v3.table(pd.DataFrame([{"구분": t["kind"], "계통": t["system"], "조건": t["text"]} for t in evd["thresholds"]]),
                              hide_index=True, width="stretch")
                 st.markdown("##### 3년 적용 순서")
                 for stg in evd["roadmap"]:
@@ -689,7 +703,7 @@ with tab5:
                 import evidence_report
                 st.pyplot(evidence_report.fig_systems(res))
                 st.caption("막대 = 근거 범위(보수~낙관), ● = 근거 대표값, × = v10 가정, ◇ = 그 계통만으로 목표를 맞출 때 필요한 절감률")
-                st.dataframe(pd.DataFrame([{"계통": r["system"], "v10 가정 r": r["v10_r"] * 100,
+                ui_v3.table(pd.DataFrame([{"계통": r["system"], "v10 가정 r": r["v10_r"] * 100,
                                             "근거 하한(%)": r["lo"] * 100, "근거 대표(%)": r["typ"] * 100,
                                             "근거 상한(%)": r["hi"] * 100, "판정": r["status"]} for r in evd["v10_check"]]),
                              hide_index=True, width="stretch",
@@ -706,13 +720,13 @@ with tab5:
                 q = evd.get("quality")
                 if q and q["rows"]:
                     with st.expander(f"품질 관문 확인 상태 ({' · '.join(f'{k} {v}' for k, v in q['counts'].items() if v)})"):
-                        st.dataframe(pd.DataFrame([{"FMEA": r["fmea_id"], "레버": r["lever_id"], "고장모드": r["failure_mode"],
+                        ui_v3.table(pd.DataFrame([{"FMEA": r["fmea_id"], "레버": r["lever_id"], "고장모드": r["failure_mode"],
                                                     "품질 관문": r["gate"], "상태": r["status"], "바뀐 조건": "; ".join(r["changed"])}
                                                    for r in q["rows"]]), hide_index=True, width="stretch")
                 cb = evd["combos"]
                 st.markdown(f"**근거 있는 레버 추가 조합** — 3년 내 후보 {len(cb['candidates'])}개, 조합 {cb['n_evaluated']}개를 결정적으로 열거")
                 if cb["results"]:
-                    st.dataframe(pd.DataFrame([{"추가 레버": " + ".join(x["names"]), "판정": x["verdict"],
+                    ui_v3.table(pd.DataFrame([{"추가 레버": " + ".join(x["names"]), "판정": x["verdict"],
                                                 "보수(%)": x["conservative"] * 100, "대표(%)": x["typical"] * 100,
                                                 "낙관(%)": x["optimistic"] * 100, "대표 격차(pt)": x["gap_typical"]}
                                                for x in cb["results"]]), hide_index=True, width="stretch",

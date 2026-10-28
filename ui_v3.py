@@ -26,6 +26,43 @@ def _layout(fig, h=360, title=None):
     return fig
 
 
+def _cell(v):
+    if v is None:
+        return ""
+    try:
+        if pd.isna(v):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    if isinstance(v, float):
+        return f"{v:,.3f}".rstrip("0").rstrip(".") if abs(v) < 1e6 else f"{v:,.0f}"
+    return str(v)
+
+
+def table(df, hide_index=True, width=None, height=None, column_config=None, **kw):  # noqa: C901
+    """긴 글이 있는 표는 줄바꿈되는 HTML 표로(모바일에서도 잘리지 않음), 숫자 위주 표는 기존 st.dataframe."""
+    import html as _h
+    if column_config is not None:
+        return st.dataframe(df, hide_index=hide_index, width=width or "stretch", height=height or "auto", column_config=column_config, **kw)
+    if not isinstance(df, pd.DataFrame):
+        df = pd.DataFrame(df)
+    long_text = any(df[c].astype(str).str.len().max() > 18 for c in df.columns if not pd.api.types.is_numeric_dtype(df[c])) if len(df) else False
+    if not long_text:
+        return st.dataframe(df, hide_index=hide_index, width=width or "stretch", height=height or "auto", **kw)
+    mh = f"max-height:{int(height)}px;" if isinstance(height, (int, float)) else ("max-height:560px;" if len(df) > 14 else "")
+    head = "".join(f"<th>{_h.escape(str(c))}</th>" for c in df.columns)
+    body = []
+    for _, row in df.iterrows():
+        tds = []
+        for v in row.tolist():
+            t = _cell(v)
+            cls = ' class="nw"' if len(t) <= 12 else (' class="lt"' if len(t) > 60 else (' class="mt"' if len(t) > 24 else ""))
+            tds.append(f"<td{cls}>{_h.escape(t)}</td>")
+        body.append("<tr>" + "".join(tds) + "</tr>")
+    st.markdown(f'<div class="wtbl-wrap" style="{mh}"><table class="wtbl"><thead><tr>{head}</tr></thead><tbody>{"".join(body)}</tbody></table></div>',
+                unsafe_allow_html=True)
+
+
 def _dot(txt):
     return "🟢" if ("충족" in txt or "통과" in txt or "추천" in txt) else ("🔴" if "미달" in txt else "🟡")
 
@@ -47,7 +84,7 @@ def tab_analysis(res):
     if dz:
         st.markdown("### 두 목표 신호등")
         st.caption("같은 조건에서 전력 -30%와 생산능력 +20%를 함께 판정 - 전력 통과가 곧 종합 통과는 아니다")
-        st.dataframe(pd.DataFrame([{"조건": r["cond"], "전력 -30%": f"{_dot(r['power'])} {r['power']}",
+        table(pd.DataFrame([{"조건": r["cond"], "전력 -30%": f"{_dot(r['power'])} {r['power']}",
                                     "생산능력 +20%": f"{_dot(r['capacity'])} {r['capacity']}", "종합": r["overall"]}
                                    for r in dz["signal"]["rows"]]), hide_index=True, width="stretch")
 
@@ -145,15 +182,15 @@ def tab_analysis(res):
                 f"{pct(r['saving'][1], 2)} · {r['margin_pt']:+.2f} pt", f"{r['alpha_star']:.3f}", ok(r, "s1", r["s1"]), ok(r, "f0", r["f0"]),
                 ok(r, "y2_no_slot", r["y2_no_slot"]), ok(r, "dryroom_gas", r["dryroom_gas"]), ok(r, "drying_gas", r["drying_gas"]),
                 f"{r['money_now'][0]:.0f}~{r['money_now'][1]:.0f} / {r['money_nochange'][0]:.0f}~{r['money_nochange'][1]:.0f}억"]
-        st.dataframe(df, hide_index=True, width="stretch")
+        table(df, hide_index=True, width="stretch")
         st.caption(md(cmp_["protocol_basis"]))
     sp = ((rm or {}).get("space") or {})
     if sp.get("ledger"):
         st.markdown("### 에이징 공간 장부 - 무엇을 재면 +20% 확보 여부가 정해지나")
         st.write(md(sp["sentence"]))
-        st.dataframe(pd.DataFrame([{"장부": r["col"], "값": r["value"], "무엇으로 정하나": r["how"], "상태": r["status"]} for r in sp["ledger"]]),
+        table(pd.DataFrame([{"장부": r["col"], "값": r["value"], "무엇으로 정하나": r["how"], "상태": r["status"]} for r in sp["ledger"]]),
                      hide_index=True, width="stretch")
-        st.dataframe(pd.DataFrame([{"": o["no"], "확보 후보": o["name"], "원리": o["how"], "기대는 조건": o["depends"], "시기": o["when"]}
+        table(pd.DataFrame([{"": o["no"], "확보 후보": o["name"], "원리": o["how"], "기대는 조건": o["depends"], "시기": o["when"]}
                                    for o in sp["options"]]), hide_index=True, width="stretch")
         st.caption(md(sp["ledger_note"]))
 
@@ -253,17 +290,8 @@ def _source_box(idx, csv_name, png_fn):
                        + (f" · [저자 공개 CSV]({src['data_url']})" if src.get("data_url") else "")))
         st.markdown(md(f"- **원문 위치**: {src['locator']}\n- **조건**: {src['conditions']}\n- **가공**: {src['processing']}\n"
                        f"- **한계**: {src['limits']}\n- **라이선스**: {src['license']}"))
-        st.dataframe(_ts(csv_name), hide_index=True, width="stretch", height=240)
-        c1, c2 = st.columns(2)
-        c1.download_button("시계열 CSV", (TS / csv_name).read_bytes(), file_name=csv_name, mime="text/csv", key=f"tscsv_{csv_name}")
-        try:
-            import timeseries_evidence as tse
-            fig = png_fn()
-            c2.download_button("PPT용 그래프 PNG", tse.figure_bytes(fig), file_name=csv_name.replace(".csv", ".png"), mime="image/png",
-                               key=f"tspng_{csv_name}")
-            tse.plt.close(fig)
-        except Exception as e:  # noqa: BLE001
-            c2.caption(f"PNG 생성 보류: {e}")
+        table(_ts(csv_name), hide_index=True, width="stretch", height=240)
+        st.download_button("⬇ 시계열 원자료 CSV", (TS / csv_name).read_bytes(), file_name=csv_name, mime="text/csv", key=f"tscsv_{csv_name}")
 
 
 def tab_validation(res):
@@ -321,7 +349,7 @@ def tab_validation(res):
     sh = (up or {}).get("shadow")
     if sh:
         st.markdown("#### 에이징 섀도 모드 4단계 관문")
-        st.dataframe(pd.DataFrame([{"단계": x["stage"], "운영": x["what"], "다음 단계 조건": x["gate"]} for x in sh["stages"]]),
+        table(pd.DataFrame([{"단계": x["stage"], "운영": x["what"], "다음 단계 조건": x["gate"]} for x in sh["stages"]]),
                      hide_index=True, width="stretch")
         st.caption(md(sh.get("n_note", "")))
         pt = sh.get("period_table")
@@ -363,6 +391,6 @@ def tab_gates(res):
     for col, sv in (("공정", s1), ("안전", s2), ("근거 등급", s3), ("상태", s4)):
         if sv:
             df = df[df[col].isin(sv)]
-    st.dataframe(df, hide_index=True, width="stretch", height=min(38 * (len(df) + 1), 520))
+    table(df, hide_index=True, width="stretch", height=min(38 * (len(df) + 1), 520))
     st.caption(f"표시 {len(df)}건 · 근거 등급 A~E(E = 팀 판단, 원문 확인 필요)")
     st.divider()
