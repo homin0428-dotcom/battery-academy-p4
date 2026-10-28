@@ -1,7 +1,7 @@
 {
   "scenario": "representative",
   "execution_mode": "cli",
-  "timestamp": "2026-10-28T19:15:01",
+  "timestamp": "2026-10-28T20:23:43",
   "configuration_hash": "55a5ec08ede42e79febe4be4b7b340965078bc6fda3fcbd5fd7f8d8a79808b95",
   "python_version": "3.13.16",
   "package_versions": {
@@ -16,7 +16,16 @@
   "calculation_mode": "건조 절감률 출처=수동 입력 (모드 A 참고값 42.20% [풍량 -20%, s=0.7, COP_h=3.85, COP_c=3, b=0.52; 건조 40% 수동 입력과 다른 값], 모드 B 계산 보류); P_add 집계=합산 방식; 추가 점유 출처=PFMEA 효과 합계",
   "warnings": [],
   "test_status": {
-    "status": "not_run"
+    "status": "passed",
+    "passed": 225,
+    "failed": 0,
+    "errors": 0,
+    "exit_code": 0,
+    "summary": "225 passed in 248.24s (0:04:08)",
+    "command": "python -m pytest -q -p no:cacheprovider tests",
+    "started": "2026-10-28T20:19:33",
+    "log_file": "test_log.txt",
+    "log_sha256": "8bb49d336c9ccaa2f77de55a24ba8122de7933ca005468ceb0ffce0214d0f2f0"
   },
   "input_sources": [
     {
@@ -295,7 +304,7 @@
   "code_files": [
     {
       "path": "app.py",
-      "sha256": "66ae13d7ed8d161c8e8a2198074e5dbffb96f1686253e837293b98693f2fcd63"
+      "sha256": "0226d64def2969f747eed155a5268b5e133093d4315c251b757b97cd16c1186f"
     },
     {
       "path": "baseline.py",
@@ -327,7 +336,7 @@
     },
     {
       "path": "evidence_report.py",
-      "sha256": "6d720e9a7bc5ccc8f32fc48633166f729f6f8f38125277b024769290f7dc1c25"
+      "sha256": "1b05054ab302a4ebdd5b2129f9234326cebb4886dff78c1026836d5ac01f9ae2"
     },
     {
       "path": "heat_integration.py",
@@ -371,12 +380,13 @@
     },
     {
       "path": "ui_v3.py",
-      "sha256": "e22ed4840603ce927d313c51b5c02bb749611d4f071251ec1e34482f4cebbb1f"
+      "sha256": "6588132921e31a5911551236165ddafe43f24051bcede1e794b6a058fdc2f0f6"
     },
     {
       "path": "upside.py",
       "sha256": "6c4f5b74b70ee665d7e8244bcfad2b3dece9d7d452d1d7e50dd309c73942465d"
     }
   ],
-  "results_json_sha256": "154a4de736f6249bb8242a9d3c655369cc44675dff22986b0a0d270fc4c92aba"
+  "results_json_sha256": "154a4de736f6249bb8242a9d3c655369cc44675dff22986b0a0d270fc4c92aba",
+  "test_log_sha256": "8bb49d336c9ccaa2f77de55a24ba8122de7933ca005468ceb0ffce0214d0f2f0"
 }

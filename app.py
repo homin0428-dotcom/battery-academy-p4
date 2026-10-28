@@ -596,7 +596,7 @@ with tab5:
             if rm_:
                 with st.expander("생산능력 +20% 공간 수지 · 연차별 도달도 · 영향평가 (PPT용)", expanded=False):
                     st.write(rm_["space"]["sentence"])
-                    ui_v3.table(pd.DataFrame([{"": o["no"], "확보 후보": o["name"], "원리": o["how"], "기대는 조건": o["depends"],
+                    ui_v3.table(pd.DataFrame([{"": o["no"], "확보 후보": o["name"], "원리": o["how"], "전제 조건": o["depends"],
                                                 "시기": o["when"]} for o in rm_["space"]["options"]]), hide_index=True, width="stretch")
                     ui_v3.table(pd.DataFrame([{"단계": r_["stage"], "전력 절감(공간 미확보)": pct_(r_["power_no_slot"]),
                                                 "전력 절감(슬롯 확보 시)": pct_(r_["power_if_slot"]), "생산비 q_t": f"{r_['q_no_slot']:.3f}",

@@ -208,7 +208,7 @@ def tab_analysis(res):
         st.write(md(sp["sentence"]))
         table(pd.DataFrame([{"장부": r["col"], "값": r["value"], "무엇으로 정하나": r["how"], "상태": r["status"]} for r in sp["ledger"]]),
                      hide_index=True, width="stretch")
-        table(pd.DataFrame([{"": o["no"], "확보 후보": o["name"], "원리": o["how"], "기대는 조건": o["depends"], "시기": o["when"]}
+        table(pd.DataFrame([{"": o["no"], "확보 후보": o["name"], "원리": o["how"], "전제 조건": o["depends"], "시기": o["when"]}
                                    for o in sp["options"]]), hide_index=True, width="stretch")
         st.caption(md(sp["ledger_note"]))
 

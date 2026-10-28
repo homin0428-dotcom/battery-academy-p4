@@ -831,7 +831,7 @@ def candidate_pages(res, cd, st, P, table, m, W, esc, Paragraph, Spacer, mm, col
                           ["공장 면적 상한", f"약 {sp['area_upper'] * 100:.1f}%", sp["area_note"]],
                           ["화성 동시 재공(16 h)", f"{sp['formation_wip']:.2f}배", f"리틀의 법칙 → 화성 구역 {sp['formation_spare'] * 100:.0f}% 여유"]],
                          [34, 24, 118]))
-        out.append(table(["", "확보 후보", "원리", "기대는 조건", "시기", "근거·제약"],
+        out.append(table(["", "확보 후보", "원리", "전제 조건", "시기", "근거·제약"],
                          [[o["no"], o["name"], o["how"], o["depends"], o["when"], o["basis"]] for o in sp["options"]],
                          [6, 26, 56, 26, 16, 46]))
         out.append(P(sp["fallback"] + ". " + sp["note"], "note"))
