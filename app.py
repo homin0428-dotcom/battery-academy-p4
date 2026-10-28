@@ -594,7 +594,7 @@ with tab5:
                     st.caption(dz_["compare"]["protocol_basis"])
             rm_ = cd.get("roadmap") if isinstance(cd.get("roadmap"), dict) and "space" in cd.get("roadmap", {}) else None
             if rm_:
-                with st.expander("생산능력 +20% 공간 수지 · 연차별 도달도 · 영향평가 (PPT용)", expanded=False):
+                with st.expander("생산능력 +20% 공간 수지 · 연차별 도달도 · 영향평가", expanded=False):
                     st.write(rm_["space"]["sentence"])
                     ui_v3.table(pd.DataFrame([{"": o["no"], "확보 후보": o["name"], "원리": o["how"], "전제 조건": o["depends"],
                                                 "시기": o["when"]} for o in rm_["space"]["options"]]), hide_index=True, width="stretch")
