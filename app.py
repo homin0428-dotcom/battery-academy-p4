@@ -609,7 +609,7 @@ with tab5:
             with st.expander("무엇을 먼저 확인하는가 (검증 우선순위)", expanded=False):
                 ui_v3.table(pd.DataFrame([{"순위": t_["priority"], "질문": t_["question"], "판정 영향": t_["impact"],
                                             "시험": t_["how"], "기간·비용(가정)": f"{t_['period']} · {t_['cost']}",
-                                            "양끝 재계산": t_["text"]} for t_ in cd["priority"]["tests"]]),
+                                            "시험 결과별 판정 (나쁠 때 / 좋을 때)": t_["text"]} for t_ in cd["priority"]["tests"]]),
                              hide_index=True, width="stretch")
                 st.caption(cd["priority"]["note"])
             st.caption("상태: 검증 완료 / 가정하 수치 충족 / 미확인 / 미달. 미확인은 통과가 아닙니다. " + cd["note"])

@@ -1,7 +1,7 @@
 {
   "scenario": "representative",
   "execution_mode": "cli",
-  "timestamp": "2026-10-28T20:23:43",
+  "timestamp": "2026-10-28T23:10:50",
   "configuration_hash": "55a5ec08ede42e79febe4be4b7b340965078bc6fda3fcbd5fd7f8d8a79808b95",
   "python_version": "3.13.16",
   "package_versions": {
@@ -21,11 +21,11 @@
     "failed": 0,
     "errors": 0,
     "exit_code": 0,
-    "summary": "225 passed in 248.24s (0:04:08)",
+    "summary": "225 passed in 197.60s (0:03:17)",
     "command": "python -m pytest -q -p no:cacheprovider tests",
-    "started": "2026-10-28T20:19:33",
+    "started": "2026-10-28T23:07:32",
     "log_file": "test_log.txt",
-    "log_sha256": "8bb49d336c9ccaa2f77de55a24ba8122de7933ca005468ceb0ffce0214d0f2f0"
+    "log_sha256": "86ad4b4818a489ccd1a1fddc9af5f3614ac4e23820fdee11b41caa8e813dd08f"
   },
   "input_sources": [
     {
@@ -304,7 +304,7 @@
   "code_files": [
     {
       "path": "app.py",
-      "sha256": "0226d64def2969f747eed155a5268b5e133093d4315c251b757b97cd16c1186f"
+      "sha256": "fbe8467d8a6dc34b6e042607927f217a6c470958a69253c892a6a206670e892a"
     },
     {
       "path": "baseline.py",
@@ -336,7 +336,7 @@
     },
     {
       "path": "evidence_report.py",
-      "sha256": "1b05054ab302a4ebdd5b2129f9234326cebb4886dff78c1026836d5ac01f9ae2"
+      "sha256": "373a45a52fb7e6c96c0318e397dc85593dc29139056864723a5ebc70b249c57e"
     },
     {
       "path": "heat_integration.py",
@@ -388,5 +388,5 @@
     }
   ],
   "results_json_sha256": "154a4de736f6249bb8242a9d3c655369cc44675dff22986b0a0d270fc4c92aba",
-  "test_log_sha256": "8bb49d336c9ccaa2f77de55a24ba8122de7933ca005468ceb0ffce0214d0f2f0"
+  "test_log_sha256": "86ad4b4818a489ccd1a1fddc9af5f3614ac4e23820fdee11b41caa8e813dd08f"
 }

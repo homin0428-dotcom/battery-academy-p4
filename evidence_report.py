@@ -736,9 +736,9 @@ def candidate_pages(res, cd, st, P, table, m, W, esc, Paragraph, Spacer, mm, col
     out.append(m["PageBreak"]())
 
     # ---- 7쪽: 검증 우선순위 + 관문 + 검출력
-    out.append(Paragraph("무엇을 먼저 확인하는가 — 검증 우선순위 (입력 양끝 재계산)", st["h2"]))
+    out.append(Paragraph("무엇을 먼저 확인하는가 — 검증 우선순위 (시험 결과별 판정)", st["h2"]))
     pr = cd["priority"]
-    out.append(table(["순위", "확인할 질문", "판정 영향", "시험(기간·비용 가정)", "양끝 재계산 결과"],
+    out.append(table(["순위", "확인할 질문", "판정 영향", "시험(기간·비용 가정)", "시험 결과별 판정 (나쁠 때 / 좋을 때)"],
                      [[str(t["priority"]) if t["impact_rank"] < 9 else "-", t["question"], t["impact"], f"{t['how']}\n({t['period']} · {t['cost']})", t["text"]]
                       for t in pr["tests"]], [9, 38, 24, 34, 71]))
     out.append(P(pr["note"], "note"))
