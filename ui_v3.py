@@ -99,8 +99,10 @@ def tab_analysis(res):
                 text=[f"{wf['start_pt']:.0f}"] + [f"-{s['pt']:.2f}<br>({s['pp']:.2f}%p)" for s in steps] + [f"{wf['E']:.2f}"],
                 textposition="outside", connector=dict(line=dict(color="#C9D6DA")),
                 decreasing=dict(marker=dict(color=TEAL)), increasing=dict(marker=dict(color=RED)), totals=dict(marker=dict(color=NAVY))))
-            fig.add_hline(y=cd["baseline"]["target"], line_dash="dash", line_color=RED,
-                          annotation_text=f"목표 {cd['baseline']['target']:.0f} pt", annotation_position="top left")
+            fig.add_hline(y=cd["baseline"]["target"], line_dash="dash", line_color=RED)
+            fig.add_annotation(x=1.0, xref="paper", y=cd["baseline"]["target"], yref="y", xanchor="right", yanchor="bottom",
+                               text=f"<b>목표 {cd['baseline']['target']:.0f} pt</b>", showarrow=False, yshift=4,
+                               font=dict(color=RED, size=13), bgcolor="rgba(255,255,255,0.92)", borderpad=3)
             fig.update_yaxes(title="12 GWh 총전력 (pt, 현재 공장 = 100)", range=[60, wf["start_pt"] + 8])
             st.plotly_chart(_layout(fig, 400, f"{pct(wf['saving'])}는 어디서 나오나 (계통별)"), width="stretch")
             st.caption(f"공정 개조 {wf['tech_pp']:.2f}%p + 고정부하 희석 {wf['dilution_pp']:.2f}%p. 희석은 팀 가정 f에서 나오며 개조 성과가 아니다.")
@@ -125,7 +127,8 @@ def tab_analysis(res):
         marker_color=[NAVY if c["id"] == cd["selected"] else ("#C7D3D7" if c["saving"][1] < 0.3 else "#7FB8BB") for c in cands],
         text=[f"{c['saving'][1] * 100:.1f}%" for c in cands], textposition="outside",
         hovertext=[f"{c['label']}<br>여유 {c['margin_pt']:+.2f} pt · 고형분 {c['solids'] * 100:.0f}%" for c in cands], hoverinfo="text"))
-    fig.add_hline(y=30, line_dash="dash", line_color=RED, annotation_text="목표 30%")
+    fig.add_hline(y=30, line_dash="dash", line_color=RED, annotation_text="<b>목표 30%</b>", annotation_position="top left",
+                  annotation=dict(font=dict(color=RED, size=13), bgcolor="rgba(255,255,255,0.92)"))
     fig.update_yaxes(title="전력 원단위 절감 (%) · 막대 = 보수~낙관", range=[0, 45])
     st.plotly_chart(_layout(fig, 380, "후보 5종 비교 - 같은 기준선·같은 근거"), width="stretch")
     b0 = next((c for c in cands if c["id"] == "B0"), None)
@@ -164,7 +167,8 @@ def tab_analysis(res):
                                      line=dict(color=AMBER, dash="dot")), secondary_y=True)
             fig.add_trace(go.Scatter(x=lab, y=[r["q_if_slot"] for r in rc["rows"]], name="생산비 q (확보 시)", mode="lines+markers",
                                      line=dict(color=NAVY)), secondary_y=True)
-            fig.add_hline(y=30, line_dash="dash", line_color=RED, annotation_text="전력 목표 30%")
+            fig.add_hline(y=30, line_dash="dash", line_color=RED, annotation_text="<b>전력 목표 30%</b>", annotation_position="top left",
+                          annotation=dict(font=dict(color=RED, size=13), bgcolor="rgba(255,255,255,0.92)"))
             fig.update_yaxes(title_text="원단위 절감 (%)", range=[0, 48], secondary_y=False)
             fig.update_yaxes(title_text="생산비 q (목표 1.2)", range=[0.9, 1.3], secondary_y=True)
             st.plotly_chart(_layout(fig, 380, "연차별 두 목표 도달도"), width="stretch")
