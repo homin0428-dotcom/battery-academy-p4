@@ -73,17 +73,30 @@ html, body, [class*="css"], .stMarkdown, .stDataFrame, button, input { font-fami
 .lights td { padding: 9px 10px; border-bottom: 1px solid #EEF3F4; }
 .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
 .g { background: #2BB673; } .r { background: #E5534B; } .y { background: #D9952B; }
-.stTabs [data-baseweb="tab-list"] { gap: 6px; }
-.stTabs [data-baseweb="tab"] { background: #F2F6F7; border-radius: 10px 10px 0 0; padding: 8px 18px; font-weight: 500; }
+.stTabs [data-baseweb="tab-list"] { gap: 10px; width: 100%; border-bottom: 2px solid #E3ECEE; }
+.stTabs [data-baseweb="tab"] { flex: 1 1 0; justify-content: center; min-height: 54px; background: #F2F6F7;
+    border-radius: 12px 12px 0 0; padding: 12px 20px; font-weight: 600; }
+.stTabs [data-baseweb="tab"] p { font-size: 15px; }
+.stTabs [data-baseweb="tab"]:hover { background: #E2EEEF; }
 .stTabs [aria-selected="true"] { background: #173B50 !important; color: #fff !important; }
-div.stDownloadButton > button { width: 100%; border-radius: 10px; border: 1px solid #237B80; color: #173B50; font-weight: 700; }
+.stTabs [aria-selected="true"] p { color: #fff !important; }
+.stTabs [data-baseweb="tab-highlight"] { background-color: #237B80 !important; height: 4px; }
+.stTabs [data-baseweb="tab-border"] { display: none; }
+.stTabs [role="tablist"] { display: flex; gap: 10px; width: 100%; border-bottom: 2px solid #E3ECEE; }
+.stTabs [role="tab"] { flex: 1 1 0; justify-content: center; text-align: center; min-height: 54px; background: #F2F6F7;
+    border-radius: 12px 12px 0 0; padding: 12px 20px; font-weight: 600; }
+.stTabs [role="tab"] p { font-size: 15px; }
+.stTabs [role="tab"]:hover { background: #E2EEEF; }
+.stTabs [role="tab"][data-selected="true"], .stTabs [role="tab"][aria-selected="true"] { background: #173B50 !important; color: #fff !important; }
+.stTabs [role="tab"][data-selected="true"] p { color: #fff !important; }
+div.stDownloadButton > button { width: 100%; min-height: 46px; border-radius: 10px; border: 1px solid #237B80; color: #173B50; font-weight: 700; }
 div.stDownloadButton > button:hover { background: #237B80; color: #fff; }
 .topbar { font-size: 13px; color: #5F6F77; letter-spacing: .04em; font-weight: 500; }
 .topbar a { color: #237B80; text-decoration: none; }
 .st-key-dl_top_pdf button { background: #173B50 !important; color: #fff !important; border: none !important; border-radius: 10px !important;
     font-size: 16px !important; font-weight: 700 !important; padding: 12px 18px !important; box-shadow: 0 6px 16px rgba(23,59,80,.28); }
 .st-key-dl_top_pdf button:hover { background: #237B80 !important; }
-@media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, 1fr); } .hero h1 { font-size: 26px; } }
+@media (max-width: 900px) { .stTabs [data-baseweb="tab"], .stTabs [role="tab"] { flex: 0 0 auto; }  .kpis { grid-template-columns: repeat(2, 1fr); } .hero h1 { font-size: 26px; } }
 </style>""", unsafe_allow_html=True)
 
 _cd0 = (res.get("evidence") or {}).get("candidates") or {}
@@ -120,7 +133,7 @@ if _sel0:
     for _c, (_lab, _fn, _mime) in zip(_dc, _dl):
         _f = OUT / _fn
         if _f.exists():
-            _c.download_button(_lab, _f.read_bytes(), file_name=f"battery_p4_{_fn}", mime=_mime, key=f"dl_{_fn}")
+            _c.download_button(_lab, _f.read_bytes(), file_name=f"battery_p4_{_fn}", mime=_mime, key=f"dl_{_fn}", width="stretch")
     st.caption(f"[GitHub 저장소]({REPO}) · 다운로드 파일은 공식 설정(설계 고정 D2)으로 생성된 결과물이다. "
                "입력을 바꾼 결과는 '입력 · 계산' 탭에서 새로 만들 수 있다.")
 
