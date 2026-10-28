@@ -1,0 +1,60 @@
+{
+  "created_date": "2026-10-28",
+  "model_version": "v12.2",
+  "role": "reference_only_no_model_override",
+  "sources": [
+    {
+      "id": "BRY2023_F4",
+      "authors": "Silje Nornes Bryntesen; Armin Kahrom; Jacob Joseph Lamb; Ignat Tolstorebrov; Odne Stokke Burheim",
+      "year": 2023,
+      "title": "Experimental Analysis of Drying Kinetics and Quality Aspects of Convection-Dried Cathodes at Laboratory Scale",
+      "journal": "Batteries 9(2), 96",
+      "doi": "10.3390/batteries9020096",
+      "url": "https://doi.org/10.3390/batteries9020096",
+      "pdf_url": "https://mdpi-res.com/d_attachment/batteries/batteries-09-00096/article_deploy/batteries-09-00096.pdf?version=1675078542",
+      "locator": "PDF p.9 Figure 4 and Table 5; conditions pp.4-5; data availability p.17",
+      "license": "CC BY 4.0",
+      "data_kind": "Figure 4 digitized approximate experimental points; Table 5 transcribed values",
+      "conditions": "NMC111/CB/PVDF 85:10:5 solid ratio; NMP solvent; laboratory coating; Figure 4: 100 C, 1 m/s convection",
+      "processing": "18 grey marker centres; x=(px-269)/1662*1000 s; y=(1269-py)/1107*2.5 kg/kg. No curve fitting or extrapolation.",
+      "limits": "Not a 60 vs 65 wt% comparison, not NIR data, not an industrial exit-NMP specification. Figure 4 representative critical point differs from Table 5 group-average value; not merged.",
+      "source_sha256": "3056d13c3b23b665350e15fe32a36fd9eb97a052e6b474634d792746090c72f8"
+    },
+    {
+      "id": "WENG2021_FEATURES2022",
+      "authors": "Andrew Weng; Peyman Mohtat; Peter M. Attia; Valentin Sulzer; Suhak Lee; Greg Less; Anna G. Stefanopoulou",
+      "year": 2021,
+      "title": "Predicting the impact of formation protocols on battery lifetime immediately after manufacturing",
+      "journal": "Joule 5, 2971-2992",
+      "doi": "10.1016/j.joule.2021.09.015",
+      "url": "https://doi.org/10.1016/j.joule.2021.09.015",
+      "dataset_doi": "10.7302/pa3f-4w30",
+      "data_url": "https://raw.githubusercontent.com/wengandrew/fast-formation/main/data/correlation_data_2022.csv",
+      "code_url": "https://github.com/wengandrew/fast-formation/blob/main/src/formation.py",
+      "paper_open_url": "https://arxiv.org/abs/2203.14158",
+      "locator": "Author CSV: form_6hr_rest_delta_voltage_v_0_to_{1..6}_hr; c3_dch_cap_at_c{2,55,158,261,364}_ah. Preprint Fig.S1 p.22 and formation protocol section.",
+      "license": "Underlying dataset: CC BY-NC 4.0 (DataCite record); author CSV is a 2022 processed release of the study data.",
+      "data_kind": "Author-processed experimental values, not raw high-frequency cycler logs",
+      "conditions": "NMC111/graphite 2.36 Ah pouch; 40 built; cell 9 excluded due to tab-weld issue, 39 in CSV. Formation and 6 h rest at room temperature. Later cycling groups RT and 45 C.",
+      "processing": "Keep all 39 cells. Voltage drop uses author-smoothed features; 0 h is defined reference. V to mV x1000. C/3 RPT capacity divided by each cell own cycle-2 capacity. Use 5 shared measurement cycles to avoid changing cohort. Median and IQR are descriptive, not confidence intervals.",
+      "limits": "No internal-short positive labels; cannot validate screening sensitivity or shorten 14 d aging. 14 h and 56 h exclude diagnostics; C company 20 to 16 h is a separate target. Cycles are not calendar time.",
+      "source_sha256": "dc37a99ce6dbbbfde716a7a8176b514707dea4c0949da4a4f1dfecaaa7bc68d4"
+    }
+  ],
+  "drying_pixel_calibration": {
+    "width": 2014,
+    "height": 1486,
+    "x0_px": 269,
+    "x1000_px": 1931,
+    "y0_px": 1269,
+    "y2p5_px": 162,
+    "picking_tolerance_px_assumption": 3,
+    "time_resolution_from_3px_s": 1.8050541516245489,
+    "nmp_resolution_from_3px_kg_kg": 0.006775067750677507,
+    "note": "Pixel-picking tolerance only; excludes experimental and original figure error."
+  },
+  "excluded_candidate": {
+    "source": "Vogt et al. TBS scale-up / relocation, DOI 10.17632/hxc4k97vmp.1",
+    "reason": "Hourly model dataset was identified but numerical time series could not be acquired in this session. No reconstructed series or fixed-load calibration was fabricated."
+  }
+}

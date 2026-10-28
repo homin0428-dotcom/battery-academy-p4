@@ -17,10 +17,21 @@ def _app():
     return at
 
 
-def test_app_runs_with_exactly_three_tabs():
+def test_app_runs_with_five_tabs_v3():
     at = _app()
     assert not at.exception
-    assert [t.label for t in at.tabs] == ["전환안 요약", "조건과 Trade-off", "PFMEA와 근거"]
+    assert [t.label for t in at.tabs] == ["📊 핵심 성과 분석", "🔬 공정별 검증 계획", "🛡️ 관문 매트릭스 · 근거", "⚙️ 입력 · 계산", "📁 상세 표 · 부록"]
+
+
+def test_app_top_pdf_button_and_public_timeseries():
+    at = _app()
+    labels = [b.label for b in at.get("download_button")]
+    assert "📄 PDF 보고서 다운로드" in labels
+    src = (ROOT / "ui_v3.py").read_text(encoding="utf-8")
+    for bad in ("np.random", "np.exp", "np.sin"):
+        assert bad not in src                       # 가짜 시계열 금지
+    for f in ("drying_nmp_digitized.csv", "formation_cycle_capacity.csv", "formation_rest_voltage.csv", "sources.json"):
+        assert (ROOT / "data" / "timeseries" / f).exists()
 
 
 def test_app_uses_core_result_values():
