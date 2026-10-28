@@ -50,15 +50,14 @@ def table(df, hide_index=True, width=None, height=None, column_config=None, **kw
     if not long_text:
         return st.dataframe(df, hide_index=hide_index, width=width or "stretch", height=height or "auto", **kw)
     mh = f"max-height:{int(height)}px;" if isinstance(height, (int, float)) else ("max-height:560px;" if len(df) > 14 else "")
-    head = "".join(f"<th>{_h.escape(str(c))}</th>" for c in df.columns)
-    body = []
-    for _, row in df.iterrows():
-        tds = []
-        for v in row.tolist():
-            t = _cell(v)
-            cls = ' class="nw"' if len(t) <= 12 else (' class="lt"' if len(t) > 60 else (' class="mt"' if len(t) > 24 else ""))
-            tds.append(f"<td{cls}>{_h.escape(t)}</td>")
-        body.append("<tr>" + "".join(tds) + "</tr>")
+    cells = [[_cell(v) for v in row.tolist()] for _, row in df.iterrows()]
+    # 열 단위로 폭 등급을 정한다(같은 열은 같은 폭): 짧은 열은 줄바꿈 금지, 긴 열은 최소 폭 보장
+    widths = []
+    for j in range(len(df.columns)):
+        mx = max([len(r[j]) for r in cells] + [0])
+        widths.append("nw" if mx <= 12 else "w1" if mx <= 24 else "w2" if mx <= 45 else "w3" if mx <= 90 else "w4")
+    head = "".join(f'<th class="{widths[j]}">{_h.escape(str(c))}</th>' for j, c in enumerate(df.columns))
+    body = ["<tr>" + "".join(f'<td class="{widths[j]}">{_h.escape(t)}</td>' for j, t in enumerate(r)) + "</tr>" for r in cells]
     st.markdown(f'<div class="wtbl-wrap" style="{mh}"><table class="wtbl"><thead><tr>{head}</tr></thead><tbody>{"".join(body)}</tbody></table></div>',
                 unsafe_allow_html=True)
 

@@ -106,8 +106,10 @@ div.stDownloadButton > button:hover { background: #237B80; color: #fff; }
            padding: 9px 12px; border-bottom: 1px solid #E3ECEE; white-space: nowrap; }
 .wtbl td { padding: 9px 12px; border-bottom: 1px solid #EEF3F4; vertical-align: top; line-height: 1.5; word-break: keep-all; overflow-wrap: anywhere; color: #1F2D35; }
 .wtbl td.nw { white-space: nowrap; }
-.wtbl td.mt { min-width: 150px; }
-.wtbl td.lt { min-width: 260px; }
+.wtbl .w1 { min-width: 150px; }
+.wtbl .w2 { min-width: 170px; }
+.wtbl .w3 { min-width: 240px; }
+.wtbl .w4 { min-width: 320px; }
 .wtbl tr:last-child td { border-bottom: none; }
 .wtbl tbody tr:hover td { background: #F7FAFA; }
 @media (max-width: 700px) { .wtbl { font-size: 12.5px; min-width: 620px; } .wtbl td, .wtbl th { padding: 7px 9px; } }
