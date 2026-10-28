@@ -23,7 +23,7 @@ HORIZON = [
     {"lever_id": "DRY-RAD", "name": "복사건조(NIR + 열풍 하이브리드)", "nature": "Degen 2023 Table 1 2040년·100% 대체 모델값(C등급)",
      "horizon": "중기", "when": "1년차 실측 → 2년차 오븐 일부 구간 부스터",
      "method": "파일럿 구간 실측 kWh/m², 바인더 이동, NMP 농도·표면 온도 인터록",
-     "pass": "문헌 효과 재현율 78% 이상(관리 전력 증가 시 α–P 영역 안) · 점화원 관문 통과"},
+     "pass": "문헌 효과 재현율 α* 이상(관리 전력 증가 시 α–P 영역 안) · 점화원 관문 통과"},
     {"lever_id": "DRM-LOCAL", "name": "드라이룸 부분 국소화(주액~밀봉)", "nature": "Degen 2040 모델 + Lechner 2025 비용 모델(R8)",
      "horizon": "중기(부분) / 장기(전면)", "when": "2년차 부분 미니환경",
      "method": "노출 구역 이슬점 지도, 최악 출입 복구 시간, 전환 로트 품질 비교",
@@ -132,13 +132,16 @@ def reach(values, stages):
                     f"{rows[0]['q_no_slot']:.3f}배·원단위 {rows[0]['power_no_slot'] * 100:.2f}%." if rows else ""}
 
 
-def horizon_table(nec):
+def horizon_table(nec, alpha_star=None):
     d = {r["lever_id"]: r for r in (nec or {}).get("rows", [])}
     out = []
     for h in HORIZON:
         r = d.get(h["lever_id"])
         pp = r["delta_pp"] if r else None
-        out.append({**h, "delta_pp": pp, "power_grade": power_grade(pp) if pp is not None and pp > 0 else "-"})
+        row = {**h, "delta_pp": pp, "power_grade": power_grade(pp) if pp is not None and pp > 0 else "-"}
+        if alpha_star is not None:
+            row["pass"] = row["pass"].replace("α* 이상(", f"{alpha_star * 100:.0f}% 이상(α*, ")
+        out.append(row)
     return {"rows": out, "newline": NEWLINE, "order": ORDER,
             "note": "전력 목표를 좌우하는 두 레버(복사건조·국소화)는 Degen 2040 모델값이라 중기. 화성 16 h는 단기지만 파일럿 후 적용."}
 
@@ -196,10 +199,10 @@ def dept_answers(wf, nec):
         "note": f"개조 기여 {share * 100:.0f}% = (건조 {tech.get('건조', 0):.2f} + 드라이룸 {tech.get('드라이룸', 0):.2f}) / 개조 합 {tot:.2f} pt."}
 
 
-def analyze(values, run, cap_mod, nec, econ, wf=None):
+def analyze(values, run, cap_mod, nec, econ, wf=None, alpha_star=None):
     sel = _sel(run)
     if sel is None or not cap_mod or "plant" not in cap_mod:
         return None
     sp = space_plan(values, sel, cap_mod["plant"])
-    return {"space": sp, "reach": reach(values, cap_mod["stages"]), "horizon": horizon_table(nec),
+    return {"space": sp, "reach": reach(values, cap_mod["stages"]), "horizon": horizon_table(nec, alpha_star),
             "impact": impact_matrix(nec, econ), "kpi": kpi_card(cap_mod["plant"], sp), "departments": dept_answers(wf, nec)}

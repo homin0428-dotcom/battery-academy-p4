@@ -915,7 +915,8 @@ def evaluate(values, clean=None, eff=None):
     try:
         import roadmap   # v12.1 PPT용 표(공간 수지·도달도·시기 분류·영향평가) - 판정 미반영
         mods["roadmap"] = roadmap.analyze(values, run, mods.get("capacity"), (mods.get("necessity") or {}).get("necessity"),
-                                          mods.get("economics"), (mods.get("baseline_model") or {}).get("waterfall"))
+                                          mods.get("economics"), (mods.get("baseline_model") or {}).get("waterfall"),
+                                          ((mods.get("joint") or {}).get("region") or {}).get("alpha_star"))
     except Exception as e:  # noqa: BLE001
         mods["roadmap"] = {"error": f"계산 보류: {type(e).__name__}: {e}"}
     mods["package_mode"] = {"mode": mode, "full": full_summary,

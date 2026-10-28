@@ -1,7 +1,7 @@
 {
   "scenario": "representative",
   "execution_mode": "cli",
-  "timestamp": "2026-10-28T01:18:14",
+  "timestamp": "2026-10-28T19:15:01",
   "configuration_hash": "55a5ec08ede42e79febe4be4b7b340965078bc6fda3fcbd5fd7f8d8a79808b95",
   "python_version": "3.13.16",
   "package_versions": {
@@ -16,16 +16,7 @@
   "calculation_mode": "건조 절감률 출처=수동 입력 (모드 A 참고값 42.20% [풍량 -20%, s=0.7, COP_h=3.85, COP_c=3, b=0.52; 건조 40% 수동 입력과 다른 값], 모드 B 계산 보류); P_add 집계=합산 방식; 추가 점유 출처=PFMEA 효과 합계",
   "warnings": [],
   "test_status": {
-    "status": "passed",
-    "passed": 224,
-    "failed": 0,
-    "errors": 0,
-    "exit_code": 0,
-    "summary": "224 passed in 181.71s (0:03:01)",
-    "command": "python -m pytest -q -p no:cacheprovider tests",
-    "started": "2026-10-28T01:15:12",
-    "log_file": "test_log.txt",
-    "log_sha256": "1e60f08d039c0420607bef71d8d2b55f491154f2a7fe7327b65c3258a86e0a04"
+    "status": "not_run"
   },
   "input_sources": [
     {
@@ -304,7 +295,7 @@
   "code_files": [
     {
       "path": "app.py",
-      "sha256": "a32e64dad782e07643d198490461c6e9330e5b863160e82dc0eded4d6401294a"
+      "sha256": "66ae13d7ed8d161c8e8a2198074e5dbffb96f1686253e837293b98693f2fcd63"
     },
     {
       "path": "baseline.py",
@@ -312,7 +303,7 @@
     },
     {
       "path": "candidates.py",
-      "sha256": "23dad07969b50dc07d1b9bf5afb48f995265ea71c9faa474628333ef58346095"
+      "sha256": "22ef65547abd5f439a75bf0c957eb6436ef2f5048c6d2fa9c82e41003f28a123"
     },
     {
       "path": "capacity.py",
@@ -368,17 +359,24 @@
     },
     {
       "path": "roadmap.py",
-      "sha256": "60fe8b03e8c1b3b384e3855d3225f567e24b86a9fdcea981b17cc4b44a238c22"
+      "sha256": "1ab63acac48ac9ce1a050f3c0c06491133d9812129ef3252ee9e30a7a93f9970"
     },
     {
       "path": "run.py",
       "sha256": "d4f3c839a8e7b8df6cbadbd4ff0a38f6e01003b4dd4f28dc23f7b91917219e1b"
     },
     {
+      "path": "timeseries_evidence.py",
+      "sha256": "52de4be5aa8867b6fc327035d0616d1c79d4401b46a99706e9e896f7d771e460"
+    },
+    {
+      "path": "ui_v3.py",
+      "sha256": "e22ed4840603ce927d313c51b5c02bb749611d4f071251ec1e34482f4cebbb1f"
+    },
+    {
       "path": "upside.py",
       "sha256": "6c4f5b74b70ee665d7e8244bcfad2b3dece9d7d452d1d7e50dd309c73942465d"
     }
   ],
-  "results_json_sha256": "02aea941997b128aebe5470bc29ac92a24758befa6d1dba7cb5d771794304e3b",
-  "test_log_sha256": "1e60f08d039c0420607bef71d8d2b55f491154f2a7fe7327b65c3258a86e0a04"
+  "results_json_sha256": "154a4de736f6249bb8242a9d3c655369cc44675dff22986b0a0d270fc4c92aba"
 }
