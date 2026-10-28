@@ -20,7 +20,7 @@ def result_key(res, scenario, quality_overrides):
     return hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False, default=str).encode()).hexdigest()
 
 
-st.set_page_config(page_title="PFMEA 연계 공정 전환 검토", layout="wide")
+st.set_page_config(page_title="배터리셀 공장 병목공정 개선안 - 근거 기반 판정", layout="wide")
 CFG = core.load_config()
 SCEN = {k: v["label_ko"] for k, v in CFG["scenarios"].items()}
 ss = st.session_state
@@ -32,8 +32,10 @@ ss.setdefault("kb_confirm", {})      # 근거 FMEA 품질 관문 확인 기록 {
 ss.setdefault("report_files", None)
 ss.setdefault("report_key", None)
 
-st.title("PFMEA 연계 공정 전환 검토")
-st.caption("공정 개선 → PFMEA 관리조치 → 추가 시간·전력·공간 부담 → 목표 재판정 → 부족 성능 역산 → 조건부 설계 결론")
+st.title("배터리셀 공장 병목공정 개선안 - 근거 기반 판정")
+st.caption("2026 배터리아카데미 문제 4 · C사 10 → 12 GWh, 전력 원단위 -30% · 화성·에이징, 전극건조·드라이룸 · "
+           "[GitHub 저장소](https://github.com/homin0428-dotcom/battery-academy-p4) · "
+           "[결과 보고서 PDF](https://github.com/homin0428-dotcom/battery-academy-p4/blob/main/outputs/evidence_report.pdf)")
 
 scenario = ss.get("scenario", "representative")
 overrides = dict(ss["custom_overrides"]) if scenario == "custom" else {}
@@ -46,6 +48,25 @@ if ss["report_files"] is not None and ss["report_key"] != CUR_KEY:
     # 시나리오·입력·품질 상태가 바뀌면 이전 보고서를 무효화한다 (화면과 다운로드 불일치 방지)
     ss["report_files"], ss["report_key"] = None, None
     ss["report_invalidated"] = True
+
+_cd0 = (res.get("evidence") or {}).get("candidates") or {}
+_sel0 = next((c for c in _cd0.get("candidates", []) if c["id"] == _cd0.get("selected")), None)
+if _sel0:
+    _dz0 = _cd0.get("design") if isinstance(_cd0.get("design"), dict) and "error" not in _cd0.get("design") else {}
+    _cp0 = (_cd0.get("capacity") or {}).get("plant") or {}
+    _m0 = ((_dz0.get("money") or {}).get("cards") or [None])[0]
+    st.success(f"**조건부 추천 {_sel0['id']} - {_sel0['name']}** · {_sel0['label']}")
+    _k = st.columns(4)
+    for _c, (_t, _v, _s) in zip(_k, [
+            ("전력 원단위 절감", f"{_sel0['saving'][1] * 100:.1f}%", "목표 30%"),
+            ("12 GWh 총전력 · 여유", f"{_sel0['E_typ']:.2f} pt", f"목표 84 pt · 여유 {_sel0['margin_pt']:+.2f} pt"),
+            ("공장 처리능력", f"{_cp0.get('plant', 0):.3f}배" if _cp0 else "-",
+             f"병목 {_cp0.get('bottleneck')} · 승인 슬롯 확보 시 1.2배" if _cp0 else ""),
+            ("연 전력비 (현재 대비)", f"{_m0['krw_eok'][0]:.0f}~{_m0['krw_eok'][1]:.0f}억 감소" if _m0 else "-", "생산 20% 늘려도 총액 감소")]):
+        with _c.container(border=True):
+            st.caption(_t)
+            st.subheader(_v)
+            st.write(_s)
 
 tab1, tab2, tab3 = st.tabs(["전환안 요약", "조건과 Trade-off", "PFMEA와 근거"])
 
@@ -67,8 +88,6 @@ def _cell(k, v):
 
 # ---------------------------------------------------------------- 탭 1
 with tab1:
-    st.selectbox("시나리오", list(SCEN), format_func=lambda k: SCEN[k], key="scenario")
-    st.caption(CFG["scenarios"][scenario]["description"] + (" — 탭 2에서 입력한 값이 적용됩니다." if scenario == "custom" else ""))
     if res.get("blocked"):
         st.error(f"입력 오류로 계산이 차단되었습니다: {res['blocked']}")
     else:
@@ -168,128 +187,132 @@ with tab1:
                 st.caption(cd["priority"]["note"])
             st.caption("상태: 검증 완료 / 가정하 수치 충족 / 미확인 / 미달. 미확인은 통과가 아닙니다. " + cd["note"])
             st.divider()
-        cols = st.columns(4)
-        for c, k in zip(cols, res["kpi"]):
-            with c.container(border=True):
-                st.caption(k["title"])
-                st.subheader(k["value"])
-                st.write(k["sub"])
-                st.caption("근거: " + k["label"])
-        st.markdown("##### 관리조치 전·후·보완 요구 비교")
-        if res["before_after"]:
-            df = pd.DataFrame([{"단계": b["stage"], "화성 처리능력(배)": b["capacity_ratio"], "총전력(pt)": b["E_total"],
-                                "원단위 절감(%)": None if b["saving_ratio"] is None else b["saving_ratio"] * 100,
-                                "격차(pt)": b["gap"], "조건": b["note"]} for b in res["before_after"]])
-            st.dataframe(df, hide_index=True, width="stretch",
-                         column_config={"화성 처리능력(배)": st.column_config.NumberColumn(format="%.3f"),
-                                        "총전력(pt)": st.column_config.NumberColumn(format="%.2f"),
-                                        "원단위 절감(%)": st.column_config.NumberColumn(format="%.2f"),
-                                        "격차(pt)": st.column_config.NumberColumn(format="%+.2f")})
-        rq = pd.DataFrame([{"항목": x["item"], "현재 입력": x["current"], "요구·허용": x["required"],
-                            "단위": x["unit"], "해석": x["note"]} for x in res["requirements"]])
-        st.dataframe(rq, hide_index=True, width="stretch")
-        st.info(res["conclusion"])
-        st.caption("요구값은 확보된 성능이 아니며, 수치 충족과 품질 상태는 별개로 판정합니다.")
-
-        # ---- 근거 기반 자동 판정 (사람이 정한 r 대신 근거 FMEA 데이터셋만 사용)
         st.divider()
-        st.markdown("### 근거 기반 자동 판정 (근거 FMEA 데이터셋)")
-        evd = res.get("evidence", {})
-        if evd.get("status") != core.NUM_OK:
-            st.error(evd.get("error", "근거 판정을 실행하지 못했습니다."))
-        else:
-            cs = evd["cases"]
-            pct = lambda x: f"{x * 100:.1f}%"
-            n_sel = sum(1 for l in evd["levers"] if l["selected"])
-            n_cov = sum(1 for l in evd["levers"] if l["selected"] and l["judge"] in ("근거 충분", "근거 약함"))
-            ov = evd.get("overall")
-            if ov:
-                (st.success if ov["all_ok"] else st.error)(f"종합 판정(추천 조합): {ov['label']}")
-                st.dataframe(pd.DataFrame([{"축": a_["axis"], "현재 선택": f"[{b_['state']}] {b_['status']}",
-                                            "추천 조합": f"[{a_['state']}] {a_['status']}"}
-                                           for a_, b_ in zip(ov["axes"], evd["overall_selected"]["axes"])]),
-                             hide_index=True, width="stretch")
+        with st.expander("부록 A. 이전 모델 (v10 시나리오 · 레버 조합 엔진) - 참고용 기록, 결론은 위 표", expanded=False):
+            st.selectbox("시나리오", list(SCEN), format_func=lambda k: SCEN[k], key="scenario")
+            st.caption(CFG["scenarios"][scenario]["description"] + (" — 탭 2에서 입력한 값이 적용됩니다." if scenario == "custom" else ""))
             cols = st.columns(4)
-            for col, (t, v, s) in zip(cols, [
-                    ("근거 판정", evd["verdict"], "목표 원단위 30% 절감 기준"),
-                    ("원단위 절감 (대표)", pct(cs["typical"]["saving"]),
-                     f"보수 {pct(cs['conservative']['saving'])} ~ 낙관 {pct(cs['optimistic']['saving'])}"),
-                    ("위 v10 가정 결과", core.fmt_pct(res["plant"].get("saving_ratio"), 2), "사람이 정한 r로 계산 (비교용)"),
-                    ("근거 있는 선택 레버", f"{n_cov} / {n_sel}", "계산 가능한 근거가 있는 레버")]):
-                with col.container(border=True):
-                    st.caption(t)
-                    st.subheader(v)
-                    st.write(s)
-            st.info(evd["conclusion"])
-            for h in evd["holds"]:
-                st.warning(h)
-            pr = evd.get("production_rec") or evd["production"]
-            st.markdown(f"**증산 +20% 판정: {pr['verdict']}** — 화성 처리능력 {'≤' if pr['formation_upper_bound'] else ''}"
-                        f"{pr['formation_capacity']:.3f}배 · 에이징 {pr['aging_status']}")
-            st.caption(pr["note"])
-            op = evd["options"]
-            st.markdown("##### 개선안 비교표")
-            yrs = op["payback_years"]
-            fmt_rng = lambda m, k: "-" if not m else f"{m[k][0]:.0f}~{m[k][1]:.0f}"
-            st.dataframe(pd.DataFrame([{
-                "개선안": r["option"], "전력 판정": r["verdict"],
-                "대표 절감(%)": None if r["saving"][1] is None else round(r["saving"][1] * 100, 1),
-                "보수~낙관(%)": "-" if r["saving"][0] is None else f"{r['saving'][0] * 100:.1f}~{r['saving'][2] * 100:.1f}",
-                "연 절감(억원)": fmt_rng(r["money_typ"], "krw_eok"),
-                **{f"허용 투자비 {n}년(억원)": ("-" if not r["money_typ"] else
-                                          f"{r['money_typ']['invest_eok'][n][0]:.0f}~{r['money_typ']['invest_eok'][n][1]:.0f}") for n in yrs},
-                "증산": r["production"] or "-", "품질 위험(FMEA)": r["risks"], "최대 변경": r["difficulty"], "근거": r["evidence"]}
-                for r in op["rows"]]), hide_index=True, width="stretch")
-            st.caption(op["note"])
-            st.markdown("##### 추천이 바뀌는 조건")
-            st.dataframe(pd.DataFrame([{"구분": t["kind"], "계통": t["system"], "조건": t["text"]} for t in evd["thresholds"]]),
-                         hide_index=True, width="stretch")
-            st.markdown("##### 3년 적용 순서")
-            for stg in evd["roadmap"]:
-                with st.expander(f"{stg['year']} — {stg['title']} ({len(stg['levers'])}개 레버)"):
-                    for lv in stg["levers"]:
-                        st.write(f"- **{lv['lever_id']}** {lv['name']} · {lv['change_type']}" + ("" if lv["has_evidence"] else " · [근거 없음]"))
-                        for g in lv["gates"]:
-                            st.caption(f"  품질 관문: {g}")
-                    for a_ in stg["actions"]:
-                        st.write(f"· {a_}")
-                    st.caption(f"다음 단계 진입 조건: {stg['exit']}")
-            import evidence_report
-            st.pyplot(evidence_report.fig_systems(res))
-            st.caption("막대 = 근거 범위(보수~낙관), ● = 근거 대표값, × = v10 가정, ◇ = 그 계통만으로 목표를 맞출 때 필요한 절감률")
-            st.dataframe(pd.DataFrame([{"계통": r["system"], "v10 가정 r": r["v10_r"] * 100,
-                                        "근거 하한(%)": r["lo"] * 100, "근거 대표(%)": r["typ"] * 100,
-                                        "근거 상한(%)": r["hi"] * 100, "판정": r["status"]} for r in evd["v10_check"]]),
-                         hide_index=True, width="stretch",
-                         column_config={k: st.column_config.NumberColumn(format="%.1f")
-                                        for k in ("v10 가정 r", "근거 하한(%)", "근거 대표(%)", "근거 상한(%)")})
-            st.pyplot(evidence_report.fig_cases(res))
-            sv = evd.get("sensitivity")
-            if sv:
-                st.markdown("##### 결합 효과·관리부담 경계도 (추천 조합)")
-                st.pyplot(evidence_report.fig_sensitivity(res))
-                fk = lambda x: "-" if x is None else f"{x * 100:.0f}%"
-                st.caption(f"대표 기준 최소 κ {fk(sv['kappa_min_typ'])} · 보수 기준 최소 κ {fk(sv['kappa_min_cons'])} · "
-                           f"허용 추가 부담(κ=1) {sv['p_max'][1.0]:.2f} pt. " + sv["note"] if sv["p_max"][1.0] is not None else sv["note"])
-            q = evd.get("quality")
-            if q and q["rows"]:
-                with st.expander(f"품질 관문 확인 상태 ({' · '.join(f'{k} {v}' for k, v in q['counts'].items() if v)})"):
-                    st.dataframe(pd.DataFrame([{"FMEA": r["fmea_id"], "레버": r["lever_id"], "고장모드": r["failure_mode"],
-                                                "품질 관문": r["gate"], "상태": r["status"], "바뀐 조건": "; ".join(r["changed"])}
-                                               for r in q["rows"]]), hide_index=True, width="stretch")
-            cb = evd["combos"]
-            st.markdown(f"**근거 있는 레버 추가 조합** — 3년 내 후보 {len(cb['candidates'])}개, 조합 {cb['n_evaluated']}개를 결정적으로 열거")
-            if cb["results"]:
-                st.dataframe(pd.DataFrame([{"추가 레버": " + ".join(x["names"]), "판정": x["verdict"],
-                                            "보수(%)": x["conservative"] * 100, "대표(%)": x["typical"] * 100,
-                                            "낙관(%)": x["optimistic"] * 100, "대표 격차(pt)": x["gap_typical"]}
-                                           for x in cb["results"]]), hide_index=True, width="stretch",
+            for c, k in zip(cols, res["kpi"]):
+                with c.container(border=True):
+                    st.caption(k["title"])
+                    st.subheader(k["value"])
+                    st.write(k["sub"])
+                    st.caption("근거: " + k["label"])
+            st.markdown("##### 관리조치 전·후·보완 요구 비교")
+            if res["before_after"]:
+                df = pd.DataFrame([{"단계": b["stage"], "화성 처리능력(배)": b["capacity_ratio"], "총전력(pt)": b["E_total"],
+                                    "원단위 절감(%)": None if b["saving_ratio"] is None else b["saving_ratio"] * 100,
+                                    "격차(pt)": b["gap"], "조건": b["note"]} for b in res["before_after"]])
+                st.dataframe(df, hide_index=True, width="stretch",
+                             column_config={"화성 처리능력(배)": st.column_config.NumberColumn(format="%.3f"),
+                                            "총전력(pt)": st.column_config.NumberColumn(format="%.2f"),
+                                            "원단위 절감(%)": st.column_config.NumberColumn(format="%.2f"),
+                                            "격차(pt)": st.column_config.NumberColumn(format="%+.2f")})
+            rq = pd.DataFrame([{"항목": x["item"], "현재 입력": x["current"], "요구·허용": x["required"],
+                                "단위": x["unit"], "해석": x["note"]} for x in res["requirements"]])
+            st.dataframe(rq, hide_index=True, width="stretch")
+            st.info(res["conclusion"])
+            st.caption("요구값은 확보된 성능이 아니며, 수치 충족과 품질 상태는 별개로 판정합니다.")
+
+            # ---- 근거 기반 자동 판정 (사람이 정한 r 대신 근거 FMEA 데이터셋만 사용)
+            st.divider()
+            st.markdown("### 근거 기반 자동 판정 (근거 FMEA 데이터셋)")
+            evd = res.get("evidence", {})
+            if evd.get("status") != core.NUM_OK:
+                st.error(evd.get("error", "근거 판정을 실행하지 못했습니다."))
+            else:
+                cs = evd["cases"]
+                pct = lambda x: f"{x * 100:.1f}%"
+                n_sel = sum(1 for l in evd["levers"] if l["selected"])
+                n_cov = sum(1 for l in evd["levers"] if l["selected"] and l["judge"] in ("근거 충분", "근거 약함"))
+                ov = evd.get("overall")
+                if ov:
+                    (st.success if ov["all_ok"] else st.error)(f"종합 판정(추천 조합): {ov['label']}")
+                    st.dataframe(pd.DataFrame([{"축": a_["axis"], "현재 선택": f"[{b_['state']}] {b_['status']}",
+                                                "추천 조합": f"[{a_['state']}] {a_['status']}"}
+                                               for a_, b_ in zip(ov["axes"], evd["overall_selected"]["axes"])]),
+                                 hide_index=True, width="stretch")
+                cols = st.columns(4)
+                for col, (t, v, s) in zip(cols, [
+                        ("근거 판정", evd["verdict"], "목표 원단위 30% 절감 기준"),
+                        ("원단위 절감 (대표)", pct(cs["typical"]["saving"]),
+                         f"보수 {pct(cs['conservative']['saving'])} ~ 낙관 {pct(cs['optimistic']['saving'])}"),
+                        ("위 v10 가정 결과", core.fmt_pct(res["plant"].get("saving_ratio"), 2), "사람이 정한 r로 계산 (비교용)"),
+                        ("근거 있는 선택 레버", f"{n_cov} / {n_sel}", "계산 가능한 근거가 있는 레버")]):
+                    with col.container(border=True):
+                        st.caption(t)
+                        st.subheader(v)
+                        st.write(s)
+                st.info(evd["conclusion"])
+                for h in evd["holds"]:
+                    st.warning(h)
+                pr = evd.get("production_rec") or evd["production"]
+                st.markdown(f"**증산 +20% 판정: {pr['verdict']}** — 화성 처리능력 {'≤' if pr['formation_upper_bound'] else ''}"
+                            f"{pr['formation_capacity']:.3f}배 · 에이징 {pr['aging_status']}")
+                st.caption(pr["note"])
+                op = evd["options"]
+                st.markdown("##### 개선안 비교표")
+                yrs = op["payback_years"]
+                fmt_rng = lambda m, k: "-" if not m else f"{m[k][0]:.0f}~{m[k][1]:.0f}"
+                st.dataframe(pd.DataFrame([{
+                    "개선안": r["option"], "전력 판정": r["verdict"],
+                    "대표 절감(%)": None if r["saving"][1] is None else round(r["saving"][1] * 100, 1),
+                    "보수~낙관(%)": "-" if r["saving"][0] is None else f"{r['saving'][0] * 100:.1f}~{r['saving'][2] * 100:.1f}",
+                    "연 절감(억원)": fmt_rng(r["money_typ"], "krw_eok"),
+                    **{f"허용 투자비 {n}년(억원)": ("-" if not r["money_typ"] else
+                                              f"{r['money_typ']['invest_eok'][n][0]:.0f}~{r['money_typ']['invest_eok'][n][1]:.0f}") for n in yrs},
+                    "증산": r["production"] or "-", "품질 위험(FMEA)": r["risks"], "최대 변경": r["difficulty"], "근거": r["evidence"]}
+                    for r in op["rows"]]), hide_index=True, width="stretch")
+                st.caption(op["note"])
+                st.markdown("##### 추천이 바뀌는 조건")
+                st.dataframe(pd.DataFrame([{"구분": t["kind"], "계통": t["system"], "조건": t["text"]} for t in evd["thresholds"]]),
+                             hide_index=True, width="stretch")
+                st.markdown("##### 3년 적용 순서")
+                for stg in evd["roadmap"]:
+                    with st.expander(f"{stg['year']} — {stg['title']} ({len(stg['levers'])}개 레버)"):
+                        for lv in stg["levers"]:
+                            st.write(f"- **{lv['lever_id']}** {lv['name']} · {lv['change_type']}" + ("" if lv["has_evidence"] else " · [근거 없음]"))
+                            for g in lv["gates"]:
+                                st.caption(f"  품질 관문: {g}")
+                        for a_ in stg["actions"]:
+                            st.write(f"· {a_}")
+                        st.caption(f"다음 단계 진입 조건: {stg['exit']}")
+                import evidence_report
+                st.pyplot(evidence_report.fig_systems(res))
+                st.caption("막대 = 근거 범위(보수~낙관), ● = 근거 대표값, × = v10 가정, ◇ = 그 계통만으로 목표를 맞출 때 필요한 절감률")
+                st.dataframe(pd.DataFrame([{"계통": r["system"], "v10 가정 r": r["v10_r"] * 100,
+                                            "근거 하한(%)": r["lo"] * 100, "근거 대표(%)": r["typ"] * 100,
+                                            "근거 상한(%)": r["hi"] * 100, "판정": r["status"]} for r in evd["v10_check"]]),
+                             hide_index=True, width="stretch",
                              column_config={k: st.column_config.NumberColumn(format="%.1f")
-                                            for k in ("보수(%)", "대표(%)", "낙관(%)", "대표 격차(pt)")})
-            if cb["long_term_excluded"]:
-                st.caption("장기 레버(3년 내 적용 어려움)는 탐색에서 제외: " + ", ".join(cb["long_term_excluded"]))
-            st.caption("탭 2 '근거 기반 판정 레버'에서 레버를 바꾸면 이 판정이 다시 계산됩니다. "
-                       "근거 범위는 확보된 성능이 아니며, 확률·점수를 만들지 않습니다.")
+                                            for k in ("v10 가정 r", "근거 하한(%)", "근거 대표(%)", "근거 상한(%)")})
+                st.pyplot(evidence_report.fig_cases(res))
+                sv = evd.get("sensitivity")
+                if sv:
+                    st.markdown("##### 결합 효과·관리부담 경계도 (추천 조합)")
+                    st.pyplot(evidence_report.fig_sensitivity(res))
+                    fk = lambda x: "-" if x is None else f"{x * 100:.0f}%"
+                    st.caption(f"대표 기준 최소 κ {fk(sv['kappa_min_typ'])} · 보수 기준 최소 κ {fk(sv['kappa_min_cons'])} · "
+                               f"허용 추가 부담(κ=1) {sv['p_max'][1.0]:.2f} pt. " + sv["note"] if sv["p_max"][1.0] is not None else sv["note"])
+                q = evd.get("quality")
+                if q and q["rows"]:
+                    with st.expander(f"품질 관문 확인 상태 ({' · '.join(f'{k} {v}' for k, v in q['counts'].items() if v)})"):
+                        st.dataframe(pd.DataFrame([{"FMEA": r["fmea_id"], "레버": r["lever_id"], "고장모드": r["failure_mode"],
+                                                    "품질 관문": r["gate"], "상태": r["status"], "바뀐 조건": "; ".join(r["changed"])}
+                                                   for r in q["rows"]]), hide_index=True, width="stretch")
+                cb = evd["combos"]
+                st.markdown(f"**근거 있는 레버 추가 조합** — 3년 내 후보 {len(cb['candidates'])}개, 조합 {cb['n_evaluated']}개를 결정적으로 열거")
+                if cb["results"]:
+                    st.dataframe(pd.DataFrame([{"추가 레버": " + ".join(x["names"]), "판정": x["verdict"],
+                                                "보수(%)": x["conservative"] * 100, "대표(%)": x["typical"] * 100,
+                                                "낙관(%)": x["optimistic"] * 100, "대표 격차(pt)": x["gap_typical"]}
+                                               for x in cb["results"]]), hide_index=True, width="stretch",
+                                 column_config={k: st.column_config.NumberColumn(format="%.1f")
+                                                for k in ("보수(%)", "대표(%)", "낙관(%)", "대표 격차(pt)")})
+                if cb["long_term_excluded"]:
+                    st.caption("장기 레버(3년 내 적용 어려움)는 탐색에서 제외: " + ", ".join(cb["long_term_excluded"]))
+                st.caption("탭 2 '근거 기반 판정 레버'에서 레버를 바꾸면 이 판정이 다시 계산됩니다. "
+                           "근거 범위는 확보된 성능이 아니며, 확률·점수를 만들지 않습니다.")
 
 # ---------------------------------------------------------------- 탭 2
 with tab2:

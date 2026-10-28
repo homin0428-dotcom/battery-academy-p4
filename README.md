@@ -5,6 +5,7 @@
 
 C사 공장(10 → 12 GWh, 전력 원단위 -30%)의 개선안 후보를 **같은 기준선·같은 근거**로 계산해 비교한다. 결과가 **어떤 조건에서 깨지는지**까지 자동으로 판정한다.
 
+> 🖥️ **프로그램 바로 실행 (웹): https://battery-academy-p4.streamlit.app**
 > 📄 **결과 보고서 바로 보기: [outputs/evidence_report.pdf](outputs/evidence_report.pdf)** (1~17쪽 본문)
 > 📊 모든 숫자의 원본: [outputs/results.json](outputs/results.json)
 
